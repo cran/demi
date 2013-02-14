@@ -1,0 +1,27 @@
+\docType{methods}
+\name{totalMatches_cluster}
+\alias{totalMatches_cluster}
+\title{Calculates the number of matches in the cluster}
+\usage{
+  totalMatches_cluster(cluster, blatTable)
+}
+\arguments{
+  \item{cluster}{A \code{vector}. A \code{vector} of probe
+  ID's in the cluster.}
+
+  \item{blatTable}{A \code{data.frame}. A \code{data.frame}
+  with alignment information.}
+}
+\value{
+  A \code{data.frame} that represents the number of probes
+  for each target in the cluster.
+}
+\description{
+  The function \code{totalMatches_cluster} calculates the
+  number of matches in the cluster in DEMI analysis. It is
+  used internally in DEMI analysis.
+}
+\author{
+  Sten Ilmjarv
+}
+

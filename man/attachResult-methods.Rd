@@ -1,0 +1,97 @@
+\docType{methods}
+\name{attachResult}
+\alias{attachResult}
+\alias{attachResult,DEMIExperiment,DEMIDiff-method}
+\title{Attach results from \code{DEMIDiff} object to \code{DEMIExperiment} object}
+\arguments{
+  \item{object}{A \code{DEMIExperiment} object. The user
+  needs to make sure that the \code{DEMIExperiment} object
+  where the results will be added is identical to the
+  \code{DEMIExperiment} object whose metadata was used to
+  calculate differential expression.}
+
+  \item{diffObject}{A \code{DEMIDiff} object. The results
+  from the \code{diffObject} parameter will be added to the
+  results of the \code{DEMIExperiment} object in the
+  \code{object} parameter.}
+}
+\value{
+  Returns a \code{DEMIExperiment} updated with the results
+  from \code{DEMIDiff} object.
+}
+\description{
+  The function \code{attachResult} attaches results stored
+  in a \code{DEMIDiff} object to the underlying
+  \code{DEMIExperiment} object. This function is useful
+  because \code{DEMIDiff} can store results only for one
+  differential expression analysis run whereas
+  \code{DEMIExperiment} object can store all the results
+  done on the same metadata stored in the
+  \code{DEMIExperiment} object. So the user is allowed to
+  keep several DEMI differential expression analysis
+  results in one \code{DEMIExperiment} object for ease of
+  use.
+}
+\details{
+  When adding results to \code{DEMIExperiment} object from
+  a \code{DEMIDiff} object the user needs to make sure that
+  the \code{DEMIExperiment} object that is stored under
+  \code{DEMIDiff} object is identical to the
+  \code{DEMIExperiment} object where the results will be
+  added to. You can access the \code{DEMIExperiment} object
+  from the \code{DEMIDiff} object with the function
+  \code{getExperiment(x)} where x is a \code{DEMIDiff}
+  object. With the function \code{identical} you can check
+  if the \code{DEMIExperiment} objects are indeed
+  identical.
+}
+\examples{
+\dontrun{
+
+# To use the example we need to download a subset of CEL files from http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819 published by Pradervand et al. 2008.
+
+# Set the destination folder where the downloaded files fill be located
+destfolder <- "demitest/testdata/"
+
+# Download packed CEL files and change the names according to the feature they represent (for example to include UHR or BRAIN in them to denote the features).
+# It is a good practice to name the files according to their features which allows easier identification of the files later.
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247694/suppl/GSM247694.CEL.gz", destfile = paste( destfolder, "UHR01_GSM247694.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247695/suppl/GSM247695.CEL.gz", destfile = paste( destfolder, "UHR02_GSM247695.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247698/suppl/GSM247698.CEL.gz", destfile = paste( destfolder, "UHR03_GSM247698.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247699/suppl/GSM247699.CEL.gz", destfile = paste( destfolder, "UHR04_GSM247699.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247696/suppl/GSM247696.CEL.gz", destfile = paste( destfolder, "BRAIN01_GSM247696.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247697/suppl/GSM247697.CEL.gz", destfile = paste( destfolder, "BRAIN02_GSM247697.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247700/suppl/GSM247700.CEL.gz", destfile = paste( destfolder, "BRAIN03_GSM247700.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247701/suppl/GSM247701.CEL.gz", destfile = paste( destfolder, "BRAIN04_GSM247701.CEL.gz", sep = "" ) )
+
+# We need the gunzip function (located in the R.utils package) to unpack the gz files.
+# Also we will remove the original unpacked files for we won't need them.
+library( R.utils )
+for( i in list.files( destfolder ) ) {
+	gunzip( paste( destfolder, i, sep = "" ), remove = TRUE )
+}
+
+# Now we can continue the example of the function attachResult.
+
+# Set up an experiment
+demiexp <- DEMIExperiment( analysis = 'gene', celpath = destfolder,
+			experiment = 'myexperiment', organism = 'homo_sapiens' )
+
+# Create clusters with an optimized wilcoxon's rank sum test incorporated within demi that precalculates the probabilities
+demiclust <- DEMIClust( demiexp, group = c( "BRAIN", "UHR" ), clust.method = demi.wilcox.test.fast )
+
+# Calcuate differential expression
+demidiff <- DEMIDiff( demiclust )
+
+# Attach the differential expression analysis results to the original 'DEMIExperiment' object
+demiexp <- attachResult( demiexp, demidiff )
+
+}
+}
+\author{
+  Sten Ilmjarv
+}
+\seealso{
+  \code{DEMIExperiment},\code{DEMIDiff},\code{getExperiment},\code{identical}
+}
+

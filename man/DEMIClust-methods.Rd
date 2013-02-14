@@ -1,0 +1,159 @@
+\docType{methods}
+\name{DEMIClust}
+\alias{DEMIClust}
+\title{Creates a \code{DEMIClust} object}
+\usage{
+  DEMIClust(experiment = "DEMIExperiment",
+    group = character(), clust.method = function() { },
+    cluster = list(), cutoff.pvalue = 0.05)
+}
+\arguments{
+  \item{experiment}{A \code{DEMIExperiment} object. Holds
+  the \code{DEMIExperiment} object whose metadata (such as
+  normalized expression values) is used to cluster the
+  probes.}
+
+  \item{group}{A \code{character}. Defines the groups that
+  are used for clustering (e.g 'group = c("TEST",
+  "CONTROL")').  It uses \code{grep} function to locate the
+  group names from the CEL file names and then builds index
+  vectors determining which files belong to which groups.}
+
+  \item{clust.method}{A \code{function}. Defines the
+  function used for clustering. The user can build a custom
+  clustering function. The input of the custom function
+  needs to be the same \code{DEMIClust} object and the
+  output is a \code{list} of probes, where each list
+  corresponds to a specific cluster. The default function
+  is \code{demi.wilcox.test} that implements the
+  \code{wilcox.test} function. However we recommend to use
+  the function \code{demi.wilcox.test.fast} that uses a
+  custom \code{wilcox.test} and runs a lot faster.}
+
+  \item{cluster}{A \code{list}. Holds the probes of
+  different clusters in a \code{list}.}
+
+  \item{cutoff.pvalue}{A \code{numeric}. Sets the cut-off
+  p-value used for determining statistical significance of
+  the probes when clustering the probes into clusters.
+  Default is 0.05.}
+}
+\value{
+  A \code{DEMIClust} object.
+}
+\description{
+  A \code{DEMIClust} object clusters probes by their
+  expression profile. The clustering is done with a
+  function defined by the \code{clust.method} parameter.
+  One could also define custom clusters by defining the
+  \code{cluster} parameter with a list of probes. It then
+  stores the clusters of probes as a \code{DEMIClust}
+  object.
+}
+\details{
+  Instead of automatically clustered probes
+  \code{DEMIClust} object can use user defined lists of
+  probes for later calculation of differential expression.
+  This is done by setting the \code{cluster} parameter. It
+  overrides the default behaviour of the \code{DEMIClust}
+  object and no actual clustering occurs. Instead the list
+  of probes defined in the \code{cluster} parameter are
+  considered as already clustered probes. The list needs to
+  contain proper names for probe vectors so that they would
+  be recognizable later. Also instead of using the default
+  clustering method the user can write his/her own function
+  for clustering probes based on the expression values.
+
+  Further specification of the parameters: \itemize{
+  \item{group}{ All the CEL files used in the analysis need
+  to contain at least one of the names specified in the
+  \code{group} parameter because they determine what groups
+  to compare against each other. It is also a good practice
+  to name the CEL files to include their common features.
+  However if a situation arises where the group/feature
+  name occurs in all filenames then the user can set group
+  names with specific filenames by seperating names in one
+  group with the "|" symbol. For example \code{group = c(
+  "FILENAME1|FILENAME2|FILENAME3",
+  "FILENAME4|FILENAME5|FILENAME6" )}. These two groups are
+  then used for clustering the probes expression values.  }
+  \item{clust.method}{ The user can write his/her own
+  function for clustering probes according to their
+  expression values. The custom function should take
+  \code{DEMIClust} object as the only parameter and output
+  a \code{list}. The output list should contain the name of
+  the clusters and the corresponding probe ID's. For
+  example \code{return( list( cluster1 = c(1:10), cluster2
+  = c(11:20), cluster3 = c(21:30) )}.  } \item{cluster}{
+  This parameter allows to calculate differential
+  expression on user defined clusters of probe ID's. It
+  needs to be a \code{list} of probe ID's where the
+  \code{list} names correspond to the cluster names. For
+  example \code{list( cluster1 = c(1:10), cluster2(1:10)
+  )}. When using this approach you need to make sure that
+  all the probe ID's given in the clusters are available in
+  the analysis. Otherwise an error message will be produced
+  and you need to remove those probes that have no
+  alignment in the analysis. When setting this parameter
+  the default behaviour will be overridden and no default
+  clustering will be applied.  } }
+}
+\examples{
+\dontrun{
+
+# To use the example we need to download a subset of CEL files from http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819 published by Pradervand et al. 2008.
+
+# Set the destination folder where the downloaded files fill be located. It can be any folder of your choosing.
+destfolder <- "demitest/testdata/"
+
+# Download packed CEL files and change the names according to the feature they represent (for example to include UHR or BRAIN in them to denote the features).
+# It is a good practice to name the files according to their features which allows easier identification of the files later.
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247694/suppl/GSM247694.CEL.gz", destfile = paste( destfolder, "UHR01_GSM247694.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247695/suppl/GSM247695.CEL.gz", destfile = paste( destfolder, "UHR02_GSM247695.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247698/suppl/GSM247698.CEL.gz", destfile = paste( destfolder, "UHR03_GSM247698.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247699/suppl/GSM247699.CEL.gz", destfile = paste( destfolder, "UHR04_GSM247699.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247696/suppl/GSM247696.CEL.gz", destfile = paste( destfolder, "BRAIN01_GSM247696.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247697/suppl/GSM247697.CEL.gz", destfile = paste( destfolder, "BRAIN02_GSM247697.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247700/suppl/GSM247700.CEL.gz", destfile = paste( destfolder, "BRAIN03_GSM247700.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247701/suppl/GSM247701.CEL.gz", destfile = paste( destfolder, "BRAIN04_GSM247701.CEL.gz", sep = "" ) )
+
+# We need the gunzip function (located in the R.utils package) to unpack the gz files.
+# Also we will remove the original unpacked files for we won't need them.
+library( R.utils )
+for( i in list.files( destfolder ) ) {
+	gunzip( paste( destfolder, i, sep = "" ), remove = TRUE )
+}
+
+# Now we can continue the example of the function DEMIClust
+
+# Set up an experiment.
+demiexp <- DEMIExperiment(analysis = 'gene', celpath = destfolder,
+			experiment = 'myexperiment', organism = 'homo_sapiens')
+
+# Create clusters with default behaviour
+demiclust <- DEMIClust( demiexp, group = c( "BRAIN", "UHR" ) )
+
+# Create clusters with an optimized wilcoxon's rank sum test incorporated within demi that precalculates the probabilities.
+# The user can specify his/her own function for clustering.
+demiclust <- DEMIClust( demiexp, group = c( "BRAIN", "UHR" ), clust.method = demi.wilcox.test.fast )
+
+# Create a 'DEMIClust' object with custom lists of probeID's
+demiclust <- DEMIClust( demiexp, cluster = list( customcluster = c(1190, 1998, 2007) ) )
+
+# To retrieve the clusters use
+getCluster( demiclust )
+
+# To retrieve cluster names use
+names( getCluster( demiclust ) )
+
+}
+}
+\author{
+  Sten Ilmjarv
+}
+\seealso{
+  \code{DEMIExperiment}, \code{demi.wilcox.test},
+  \code{demi.wilcox.test.fast}, \code{demi.comp.test},
+  \code{wprob}
+}
+

@@ -1,0 +1,19 @@
+\name{DEMIResult-class}
+\alias{DEMIResult-class}
+\title{Class \code{DEMIResult}}
+\arguments{
+  \item{group}{A \code{DEMIGroup} object. Holds the
+  information about the groups that were used for
+  clustering.}
+
+  \item{result}{A \code{list}. Holds the analysis results
+  for each cluster.}
+}
+\description{
+  The class \code{DEMIResult} holds the results of the
+  specified clusters.
+}
+\author{
+  Sten Ilmjarv
+}
+

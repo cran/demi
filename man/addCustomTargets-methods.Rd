@@ -1,0 +1,108 @@
+\docType{methods}
+\name{addCustomTargets}
+\alias{addCustomTargets}
+\title{Add new alignments to the alignment table}
+\usage{
+  addCustomTargets(object = "DEMIExperiment",
+    blat = "data.frame", anno = "data.frame",
+    overwrite = FALSE)
+}
+\arguments{
+  \item{object}{A \code{DEMIExperiment} object. Determines
+  the experiment where the additional alignment information
+  will be added to.}
+
+  \item{blat}{A \code{data.frame}. Represents the added
+  alignments of probes to the target sequences.}
+
+  \item{anno}{A \code{data.frame}. Represents the added
+  annotation of the target sequences. If the parameter
+  \code{anno} has not been defined then custom annotation
+  will be populated with NA.}
+
+  \item{overwrite}{A \code{logical}. If FALSE the previous
+  alignment table will be overwritten. By default it is set
+  to FALSE.}
+}
+\value{
+  Returns the \code{DEMIExperiment} object where the
+  additional information has been added to the alignment
+  table.
+}
+\description{
+  The function \code{addCustomTargets} adds additional rows
+  to the alignment table. Before adding new alignments the
+  user needs to verify that the format of the rows
+  corresponds to the format of the alignment table. These
+  new alignments will then be incorporated in the analysis.
+}
+\details{
+  The user needs to make sure that the proper fields in the
+  additional alignment information are not missing. To see
+  which fields are required use the function
+  \code{colnames( getAlignment( x ) )} on the
+  \code{DEMIExperiment} object. The two fields that are
+  always required are 'probeID' and 'targetID', the others
+  are optional. All the other fields will be generated
+  automatically and set to NA. If the user knows the
+  annotation information for the targets in the alignment
+  table then it is recommended to add that information to
+  the annotation table. To see what are the fields of
+  annotation table use the function \code{colnames(
+  getAnnotation( x ) )} on the \code{DEMIExperiment}
+  object. This information will then be seen later in the
+  analysis results. When adding custom annotations the only
+  field that is required is the 'targetID', all other
+  fields are optional however for later use it is better to
+  add some more information about the target like it's
+  description.
+}
+\examples{
+\dontrun{
+
+# To use the example we need to download a subset of CEL files from http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819 published by Pradervand et al. 2008.
+
+# Set the destination folder where the downloaded files fill be located. It can be any folder of your choosing.
+destfolder <- "demitest/testdata/"
+
+# Download packed CEL files and change the names according to the feature they represent (for example to include UHR or BRAIN in them to denote the features).
+# It is a good practice to name the files according to their features which allows easier identification of the files later.
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247694/suppl/GSM247694.CEL.gz", destfile = paste( destfolder, "UHR01_GSM247694.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247695/suppl/GSM247695.CEL.gz", destfile = paste( destfolder, "UHR02_GSM247695.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247698/suppl/GSM247698.CEL.gz", destfile = paste( destfolder, "UHR03_GSM247698.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247699/suppl/GSM247699.CEL.gz", destfile = paste( destfolder, "UHR04_GSM247699.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247696/suppl/GSM247696.CEL.gz", destfile = paste( destfolder, "BRAIN01_GSM247696.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247697/suppl/GSM247697.CEL.gz", destfile = paste( destfolder, "BRAIN02_GSM247697.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247700/suppl/GSM247700.CEL.gz", destfile = paste( destfolder, "BRAIN03_GSM247700.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247701/suppl/GSM247701.CEL.gz", destfile = paste( destfolder, "BRAIN04_GSM247701.CEL.gz", sep = "" ) )
+
+# We need the gunzip function (located in the R.utils package) to unpack the gz files.
+# Also we will remove the original unpacked files for we won't need them.
+library( R.utils )
+for( i in list.files( destfolder ) ) {
+	gunzip( paste( destfolder, i, sep = "" ), remove = TRUE )
+}
+
+# Now we can continue the example of the function demi
+
+# Set up an experiment
+demiexp <- DEMIExperiment(analysis = 'gene', celpath = destfolder,
+			experiment = 'myexperiment', organism = 'homo_sapiens')
+
+# Create a custom annotation for one target ID
+anno <- data.frame("RANDOM_ID", "Some kind of description")
+colnames(anno) <- c("targetID", "description")
+
+# Create a custom alignment for one target ID
+blat <- data.frame(c(616302,1133177), c("RANDOM_ID","RANDOM_ID"))
+colnames(blat) <- c("probeID", "targetID")
+
+# Create a custom alignment for one target ID
+customexp <- addCustomTargets(demiexp, blat, anno, FALSE)
+
+}
+}
+\author{
+  Sten Ilmjarv
+}
+

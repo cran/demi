@@ -1,0 +1,50 @@
+\docType{methods}
+\name{DEMIGroup}
+\alias{DEMIGroup}
+\title{Creates a \code{DEMIGroup} object}
+\usage{
+  DEMIGroup(groupA = character(), groupB = character(),
+    indexA = numeric(), indexB = numeric(),
+    groupNames = character())
+}
+\arguments{
+  \item{groupA}{A \code{character}. Holds the name of group
+  A.}
+
+  \item{groupB}{A \code{character}. Holds the name of group
+  B.}
+
+  \item{indexA}{A \code{numeric}. A vector of column
+  indexes belonging to group A.}
+
+  \item{indexB}{A \code{vector}. A vector of column indexes
+  belonging to group B.}
+
+  \item{groupNames}{A \code{character}. Holds the names of
+  custom groups created by the user.}
+}
+\value{
+  A \code{DEMIGroup} object that holds the group
+  annotations.
+}
+\description{
+  A \code{DEMIGroup} object holds the group annotations
+  such as the column indexes of both groups and names of
+  the groups. It is used internally in DEMI analysis.
+}
+\details{
+  The \code{DEMIGroup} can hold both automatically
+  generated annotations that depend on the group names or
+  custom annotations specified by the user. The
+  automatically generated ones are created by scanning for
+  the specified group names in the column names of the
+  normalized expression matrix. It then retrieves the
+  column indexes where the specified group names occure.
+  The custom group names are just stored in the
+  \code{groupNames} vector and all the other parameters of
+  the \code{DEMIGroup} object will be left empty.
+}
+\author{
+  Sten Ilmjarv
+}
+

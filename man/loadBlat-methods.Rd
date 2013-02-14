@@ -1,0 +1,26 @@
+\docType{methods}
+\name{loadBlat}
+\alias{loadBlat}
+\alias{loadBlat,DEMIExperiment,environment-method}
+\title{Loads the alignment information specified by the \code{DEMIExperiment} object}
+\arguments{
+  \item{object}{A \code{DEMIExperiment} object.}
+
+  \item{pkg}{An \code{environment}. Specifies the
+  environment where to load the data from.}
+}
+\value{
+  Returns a \code{data.frame} with alignment information.
+}
+\description{
+  The function \code{loadBlat} loads the alignment
+  information for the specified \code{DEMIExperiment}
+  object. It is used internally in DEMI analysis.
+}
+\author{
+  Sten Ilmjarv
+}
+\seealso{
+  \code{DEMIExperiment}, \code{environment}
+}
+

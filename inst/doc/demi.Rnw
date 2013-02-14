@@ -1,0 +1,867 @@
+\documentclass[a4paper]{article}
+\special{papersize=210mm,297mm}
+
+\usepackage[top=2in, bottom=2in, left=3cm,right=3cm]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\begin{document}
+
+%\VignetteIndexEntry{Using demi}
+%\VignetteKeyword{demi,DEMIExperiment,DEMIClust,DEMIDiff,DEMIPathway}
+
+\title{demi Package Vignette}
+\author{Sten Ilmj\"{a}rv \texttt{sten.ilmjarv@gmail.com}\\
+		Hendrik Luuk \texttt{hendrik.luuk@gmail.com}}
+\date{\today}
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+\label{s:introduction}
+
+The R package demi is an implementation of the DEMI
+(Differential Expression from Multiple Indicators) framework into a
+self-contained software tool for the differential expression analysis of
+high-density gene expression microarrays. \\\\
+The DEMI framework is a 3-step methodology for estimating differential expression
+directly from probe-level data without the summarization of probe signals. As
+output, DEMI delivers lists of differentially expressed genes, transcripts, genomic regions and
+pathways. We hope that as a software tool, DEMI facilitates the analysis of
+large-scale gene expression data by providing a single command to launch the
+analysis workflow starting from CEL files and ending with tabulated results.
+The software is intended for use by lifescientists and bioinformaticians alike. \\\\
+High-density microarrays contain thousands to millions of covalently bound
+25-mer (Affymetrix\textsuperscript{\textregistered}) nucleotides designed to
+measure the expression of specific regions on the genome by the nucleic acid hybridization principle. Based on
+sequence identity, a probe can be designed to target an exon, thereby reporting the expression of the exon, to
+target an exon-exon junction, thereby reporting the expression of a specific transcript, or to
+target intergenic regions that do not correspond to any of the known genes. Ultimately,
+choosing a set of targets for differential expression analysis is down to the user's choice. For
+example, one might be interested in evaluating differential expression only on exon
+level in order to determine differential splicing between two experimental conditions. 
+Another user might prefer a more general approach being interested in studying 
+up- and down-regulation on the level of transcripts, genes or, even more generally, on the
+level of pathways. In addition, one can study the expression of large genomic
+regions where the probes might also target intergenic sequences. All of this can
+be done with DEMI.\\\\
+By using a common statistical test to classify probes based on their expression profiles
+into up-regulated, down-regulated or equally expressed clusters and by studying the enrichment
+of differentially expressed probes among on-target probes as opposed to off-target probes, DEMI
+arrives at a differential expression estimate which accounts for the number of probes matching
+a target. In other words, even if the ratio of differentially expressed on-target probes is identical
+for two targets, the target with a smaller number of matching probes gets a higher (i.e. less significant)
+p-value. This makes sense intuitively as a target which has been independently measured by 15 probes
+is expected to yield more reliable differential expression estimates than a target that was measured
+by only 3 probes. In fact, this peculiarity of the DEMI framework enables the
+user to study differential expression in very small samples of n $<$ 3 while still maintaining a
+reasonable degree of accuracy. \\\\
+
+\section{Installation}
+\label{s:installation}
+
+To start off you need to install the demi package. You should be able to
+install the demi package from a CRAN repository with the function:\\\\
+\texttt{\textsl{> install.packages( "demi" )}}\\\\
+Now you can to load the DEMI package: \\\\
+\texttt{\textsl{> library( demi )}} \\\\
+When you run the DEMI analysis for the first time you are required to download
+and install the demi data packages as well. It will be done
+automatically but can take some time for some annotation packages contain
+several microarray platforms and are therefore quite big in size. Make sure
+you have enough room on your hard drive where R libraries will be installed.
+However this is done only once and future analysis will load the installed demi
+data packages from the local library. If for some reason the packages won't be
+installed automatically or demi repository is down, then you can manually
+download and install the data packages from the website
+\url{http://biit.cs.ut.ee/demi}. There you can also find the manual and other
+useful information.\\\\
+For the demonstration of demi package we will use Microarray Quality Consortium
+(MAQC) \cite{maqc} dataset on HG-U133 Plus 2 microarray platform to illustrate
+the DEMI usage with some examples. First you need to download the \textit{CEL}
+files used in the examples to a destination folder.\\\\
+\texttt{\textsl{
+\# an example of a destination folder\\
+> celdir <- "demitest/testdata/"\\\\
+\# download all 8 CEL files to the destination folder and rename them\\
+\# according to their feature\\
+download.file("ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247694/\\
+suppl/GSM247694.CEL.gz", destfile=paste(celdir, "UHR01\_GSM247694.CEL.gz",\\
+sep = ""))\\
+download.file("ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247695/\\
+suppl/GSM247695.CEL.gz", destfile=paste(celdir, "UHR02\_GSM247695.CEL.gz",\\
+sep = ""))\\
+download.file("ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247698/\\
+suppl/GSM247698.CEL.gz", destfile=paste(celdir, "UHR03\_GSM247698.CEL.gz",\\
+sep = ""))\\
+download.file("ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247699/\\
+suppl/GSM247699.CEL.gz", destfile=paste(celdir, "UHR04\_GSM247699.CEL.gz",\\
+sep = ""))\\
+download.file("ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247696/\\
+suppl/GSM247696.CEL.gz", destfile=paste(celdir, "BRAIN01\_GSM247696.CEL.gz",\\
+sep = ""))\\
+download.file("ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247697/\\
+suppl/GSM247697.CEL.gz", destfile=paste(celdir, "BRAIN02\_GSM247697.CEL.gz",\\
+sep = ""))\\
+download.file("ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247700/\\
+suppl/GSM247700.CEL.gz", destfile=paste(celdir, "BRAIN03\_GSM247700.CEL.gz",\\
+sep = ""))\\
+download.file("ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247701/\\
+suppl/GSM247701.CEL.gz", destfile=paste(celdir, "BRAIN04\_GSM247701.CEL.gz",\\
+sep = ""))\\\\
+\# We need the gunzip function (located in the R.utils package) to unpack\\
+\# the downloaded gz files in the destination folder\\
+\# Also we will remove the original unpacked files for we won't need them\\
+library( R.utils )\\
+for( i in list.files( celdir ) ) \{\\
+\hspace*{2em}gunzip( paste( celdir, i, sep = "" ), remove = TRUE )\\
+\}
+}} \\\\
+The data are raw expression measurements in \textit{CEL} files used in a paper
+by Pradervand et al. \cite{hgu133} (download available from GEO
+\url{http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819}). There
+are 4 samples of both universal human reference (UHR) and brain (BRAIN) tissue.
+To see which \textit{CEL} files are available in the directory, try:\\\\
+\texttt{\textsl{> list.files( celdir )}}
+\begin{verbatim}
+[1] "BRAIN01_GSM247696.CEL" "BRAIN02_GSM247697.CEL" "BRAIN03_GSM247700.CEL"
+[4] "BRAIN04_GSM247701.CEL" "UHR01_GSM247694.CEL"   "UHR02_GSM247695.CEL"  
+[7] "UHR03_GSM247698.CEL"   "UHR04_GSM247699.CEL"
+\end{verbatim}
+\section{Differential expression analysis}
+\label{ss:differentialexpressionanalysis}
+
+\subsection{Defining data}
+\label{ss:demiexperiment}
+
+In order to run the analysis one must first define an experiment. Experiment is
+a \texttt{\textsl{DEMIExperiment}} object that contains the required metadata
+that will be used in the analysis. Several analysis can be run on the same
+\texttt{\textsl{DEMIExperiment}} object which reduces the redundancy of
+having to load the metadata several times. An experiment can be created using
+the function \texttt{\textsl{DEMIExperiment}}, that depending on the analysis type
+has four or five compulsory parameters: \texttt{\textsl{analysis}},
+\texttt{\textsl{experiment}}, \texttt{\textsl{organism}},
+\texttt{\textsl{celpath}} and \texttt{\textsl{sectionsize}}.
+\texttt{\textsl{DEMIExperiment}} is not the actual analysis itself but more like
+a container of data that is used in the later stages of the analysis.
+
+\begin{description}
+\item[analysis] Defines the type of the analysis to be performed. It can
+be either ``exon'', ``transcript'', ``gene'' or ``genome''. The first three are
+all self explanatory but ``genome'' analysis needs further explanation. More
+specifically, the ``genome'' analysis uses genomic regions of specified size
+(set by the \texttt{\textsl{sectionsize}} parameter) as the targets for
+differential expression analysis. This kind of analysis has the potential of detecting differential
+expression in larger clusters of genes based on genomic proximity providing a
+genome-level view of differential expression events. For example, one might
+use it to detect long range epigenetic silencing effects where neighbouring genes are
+predominantly down-regulated.
+\item[experiment] Defines a name for the experiment which is useful for the user
+to identify experiments later.
+\item[organism] Defines the organism name. The organism name needs to be
+provided in lower case letters with words seperated by underscore (e.g.
+``homo\_sapiens''). This is important for the demi package to be able to load
+annotations in the demi annotation packages for different microarray platforms.
+Each demi data package is specified by the organism name and it contains
+all currently implemented microarray platform annotations for this species. If,
+for some reason, your microarray platform is not available for analysis, you can
+contact us and we will try to add it and update the demi annotation packages
+accordingly.
+\item[celpath] Defines the directory of the \textit{CEL} files or is a character
+vector of the \textit{CEL} file names (with the full path). It is a good
+practice to name your \textit{CEL} files according to their features. For
+example, names of \textit{CEL} files representing replicates of an experimental
+condition must contain a common tag in order for DEMI to identify them. As in
+the example dataset above, all \textit{CEL} files that measure gene expression
+activity in the brain contained the substring ``BRAIN'' in their file names. All
+\textit{CEL} files measuring UHR contained the ``UHR'' substring in their file
+names. This makes it easy to recoqnize different features of the files and
+allows DEMI analysis to group them accordingly.
+\item[sectionsize] This is only used when the \texttt{\textsl{analysis}}
+parameter is set to ``genome''. It specifies the size of genomic regions used as
+targets in the analysis. The regions are designed to overlap with the neighboring
+regions by 50\%. Currently sectionsizes 100000, 500000 and 1000000 are available.
+\end{description}
+An example of using ``gene'' analysis with specified \textit{CEL} files
+directory:\\\\
+\texttt{\textsl{> demiexp <- DEMIExperiment( analysis = "gene", experiment
+= "maqc",\\organism = "homo\_sapiens", celpath = celdir )}}\\\\
+To run the analysis on transcripts, exons or genome regions as targets, simply
+change the \texttt{\textsl{analysis}} parameter accordingly. An example in using
+``genome'' analysis with specified \texttt{\textsl{sectionsize}} and specific
+\textit{CEL} files:\\\\
+\texttt{\textsl{> demiexp <- DEMIExperiment( analysis = "genome", experiment =
+"maqc",\\organism = "homo\_sapiens", celpath = paste( celdir, list.files(
+celdir ),\\sep = "" ), sectionsize = 500000 ) }}\\\\
+By providing these parameters the package automatically detects the microarray
+platform from the \textit{CEL} files and loads the required data from demi
+data packages (if the data packages are not available in the local library it
+will download and install the data packages from demi repository on the first
+run of demi analysis). It then loads the raw expression matrix from the
+\textit{CEL} files and automatically normalizes it with
+\texttt{\textsl{DEMIExperiment}} default parameters
+(see section ~\ref{ss:advanceanalaysis:demiexperiment} on how to override the
+default parameters). When the \texttt{\textsl{DEMIExperiment}} object has been
+created one can move on to cluster the probes based on their expression dynamics
+as inferred from the normalized intensity values.
+
+\subsection{Clustering of probes - evaluation of probe expression profiles}
+\label{ss:demiclust}
+
+Clustering of probes means that the normalized signal intensities located
+in the \texttt{\textsl{DEMIExperiment}} object (see section
+\ref{ss:demiexperiment}) are statistically evaluated in order to group probes
+with similar expression profiles. In the simplest case of comparing groups TEST
+and CONTROL, this will produce three lists of probes - probes that have
+significantly higher median signal intensity value in condition TEST compared
+to condition CONTROL, probes that have significantly lower median signal intensity
+value in condition TEST compared to CONTROL and probes with no significant
+difference in the median signal between the conditions. For example, in the MAQC
+dataset two types of RNA samples are used - brain RNA (BRAIN) and universal
+human reference RNA (UHR). Clustering will produce two list of probes with
+higher and lower median signal intensities in the BRAIN, respectively. \\\\
+The clustering described above is done with a \texttt{\textsl{DEMIClust}} object
+by running the \texttt{\textsl{DEMIClust}} function. Two parameters are required
+by \texttt{\textsl{DEMIClust}}: \texttt{\textsl{experiment}} and
+\texttt{\textsl{group}}.
+
+\begin{description}
+\item[experiment] Denotes the previously created
+\texttt{\textsl{DEMIExperiment}} object that contains all the metadata used in
+the analysis.
+\item[group] Is a two element character vector containing group (can also
+denote conditions or features) names used in the comparison. These group names
+are checked against the names of \textit{CEL} files. All \textit{CEL} files that
+contain the first character in \texttt{\textsl{group}} vector are set to groupA
+and all the \textit{CEL} files that contain the second character in
+\texttt{\textsl{group}} vector are set to groupB. The clustering will then
+compare signal intensities between groupA and groupB.
+\end{description}
+\texttt{\textsl{> demiclust <- DEMIClust( experiment = demiexp, group =
+c( "BRAIN", "UHR" ) )}}\\\\
+It is also possible to create a \texttt{\textsl{DEMIClust}} object with
+probes selected specifically by the user. If the user wants to run the
+differential expression analysis on specific probes only,
+the \texttt{\textsl{DEMIClust}} object allows the user to submit custom probe
+lists. This is done by using two parameters: \texttt{\textsl{experiment}} and
+\texttt{\textsl{cluster}}.
+
+\begin{description}
+\item[experiment] Denotes the previously created
+\texttt{\textsl{DEMIExperiment}} object that contains all the metadata used in
+the analysis. In this case the probes in the \texttt{\textsl{cluster}} lists are
+checked for their presence in the metadata. If they are not available an
+error message will be displayed. This restricts the user to use only probes that
+are available in the analysis. An obvious use case for custom clusters would be
+when the user wants to group probes with differential expression in more than
+one comparison by taking the overlap of probes that have differential expression
+in several comparisons.
+\item[cluster] Is a list of vectors containing customly chosen probes. The
+vectors in the list need to be properly named, otherwise they won't be
+recoqnizable in the later stages of the analysis.
+\end{description}
+For this example we utilize the function \texttt{\textsl{getTargetProbes}}
+(see section ~\ref{ss:extrafunctionality} for more information about the
+function) to retrieve probes of specific genes that we know are differentially expressed in
+our dataset. We use these probes to make three custom clusters of probes, each
+representing a cluster containing probes measuring the specified gene.\\\\
+\texttt{\textsl{> custom\_clusters <- list(\\
+\hspace*{10mm}tcf4 = getTargetProbes( demiexp, "TCF4" )\$probeID,\\
+\hspace*{10mm}cd44 = getTargetProbes( demiexp, "CD44" )\$probeID,\\
+\hspace*{10mm}calm1 = getTargetProbes( demiexp, "CALM1" )\$probeID\\
+\hspace*{10mm})}}
+\\\\
+\texttt{\textsl{> demicustom <- DEMIClust( experiment = demiexp, cluster =
+custom\_clusters ) }}\\\\
+When the probe clusters have been created one can move on to performe
+differential expression analysis.
+
+\subsection{Differential expression analysis - from probes to annotation}
+\label{ss:demidiff}
+
+The goal of differential expression analysis is to determine exons, transcripts,
+genes or genomic regions that have distinct expression profiles between experimental
+conditions. By now we have loaded metadata for the analysis in a
+\texttt{\textsl{DEMIExperiment}} object and clustered the probes based on their
+normalized signal intensities with a \texttt{\textsl{DEMIClust}} object.
+Although we already have lists of probes that have statistically significant
+differential signal intensities between two experimental conditions it is
+difficult to make conclusions just based on probes. We need to be able to relate
+these probes either to exons, transcripts, genes or genomic regions i.e. to
+their corresponding targets. To understand how targets behave in specified
+experimental conditions we need to create a \texttt{\textsl{DEMIDiff}} object
+that requires only one parameter: \texttt{\textsl{cluster}}. \\\\
+The \texttt{\textsl{cluster}} parameter is actually a previously created
+\texttt{\textsl{DEMIClust}} object (see section \ref{ss:demiclust}). The
+\texttt{\textsl{DEMIDiff}} object takes the input \texttt{\textsl{cluster}}
+parameter and uses hypergeometric probability distribution to determine whether
+the target is differentially expressed. The calculation is done using the
+following formula:\\\\
+\begin{equation}
+\label{Hypergeometric propability function}
+pXH = HG( XH, XT, T - XT, H )
+\end{equation}
+\begin{description}
+\item[pHX] H0 probability that target X (a gene or a transcript, for example) is 
+up-regulated
+\item[HG] Hypergeometric probability function
+\item[XH] Number of up-regulated probes matching target X
+\item[XT] Total number of probes matching target X
+\item[T] Total number of probes in the analysis 
+\item[H] Total number of up-regulated probes in the analysis
+\end{description}
+The \texttt{\textsl{DEMIDiff}} object analyzes the data with the given
+formula, annotates the results and subsequently stores them in a
+\texttt{\textsl{DEMIResults}} object stored within a \texttt{\textsl{DEMIDiff}}
+object.\\\\
+Let us now calculate differentially expressed genes for the two
+\texttt{\textsl{DEMIClust}} objects that were created before - for
+automatically clustered probes and for user defined probe clusters (see
+section \ref{ss:demiclust}).
+\\\\
+\texttt{\textsl{> demidiff <- DEMIDiff( cluster = demiclust )}} \\\\
+\texttt{\textsl{> customdiff <- DEMIDiff( cluster = demicustom )}}
+
+\subsection{Functional annotation analysis}
+\label{ss:demipathway}
+
+The demi R package contains built in functionality to run functional annotation
+analysis on the differential expression results obtain with DEMI analysis. The
+function to perform functional annotation analysis is
+\texttt{\textsl{DEMIPathway}} that returns the results of functional annotation
+analysis in a \texttt{\textsl{data.frame}}. The \texttt{\textsl{DEMIPathway}}
+function requires as input a \texttt{\textsl{DEMIDiff}} object (see section
+\ref{ss:demidiff}) where the results from differential expression analysis are
+stored. The function \texttt{\textsl{DEMIPathway}} can only be used if the
+analysis was contucted on "gene" or "transcript" as analysis type.\\\\
+\texttt{\textsl{> demipath <- DEMIPathway( demidiff )}}
+
+\subsection{DEMI wrapper function - one function to do it all}
+
+Since DEMI analysis in most cases follows a fairly standard procedure there is
+one function that implements the whole analysis from top to bottom without having to
+create seperate DEMI objects for each step. It is a wrapper around all DEMI
+objects like \texttt{\textsl{DEMIExperiment}}, \texttt{\textsl{DEMIClust}},
+\texttt{\textsl{DEMIDiff}} and \texttt{\textsl{DEMIPathway}}. The function to
+implement this is \texttt{\textsl{demi}}. It uses the same parameters as the
+DEMI objects described in previous sections, incorporating them all into one
+function. It also prints the results directly to the working directory of the R
+session and retuns a list containing a \texttt{DEMIExperiment} object with the
+attached results and a \texttt{data.frame} with functional annotation analysis
+results when performed. The parameters for \texttt{\textsl{demi}} function are:
+
+\begin{description}
+\item[analysis] See section \ref{ss:demiexperiment} for explanation of the same
+parameter under the \texttt{\textsl{DEMIExperiment}} object.
+\item[experiment] See section \ref{ss:demiexperiment} for explanation of the
+same parameter under the \texttt{\textsl{DEMIExperiment}} object.
+\item[organism] See section \ref{ss:demiexperiment} for explanation of the same
+parameter under the \texttt{\textsl{DEMIExperiment}} object.
+\item[celpath] See section \ref{ss:demiexperiment} for explanation of the same
+parameter under the \texttt{\textsl{DEMIExperiment}} object.
+\item[sectionsize] See section \ref{ss:demiexperiment} for explanation of the
+same parameter under the \texttt{\textsl{DEMIExperiment}} object.
+\item[group] See section \ref{ss:demiclust} for explanation of the same
+parameter under the \texttt{\textsl{DEMIClust}} object.
+\item[cluster] See section \ref{ss:demiclust} for explanation of the same
+parameter under the \texttt{\textsl{DEMIClust}} object.
+\item[filetag] If the parameter \texttt{\textsl{filetag}} has been set then the
+output files automatically contain the character set in the
+\texttt{\textsl{filetag}} parameter.
+\item[pathway] This parameter defines whether to perform functional annotation
+analysis on the results from differential expression analysis. If set to
+\texttt{\textsl{TRUE}} it will also print out the results from functional
+annotation analysis to a file in the working directory of the R session. This
+file contains the character string ``pathway'' in it. The pathway analysis can
+only be done if the \texttt{\textsl{analysis}} parameter has been set to either
+"gene" or "transcript".
+\item[maxtargets] See section \ref{ss:advanceanalaysis:demiexperiment} for explanation
+of the same parameter under the \texttt{DEMIExperiment} object.
+\item[maxprobes] See section \ref{ss:advanceanalaysis:demiexperiment} for explanation
+of the same parameter under the \texttt{DEMIExperiment} object.
+\item[pmsize] See section \ref{ss:advanceanalaysis:demiexperiment} for explanation of
+the same parameter under the \texttt{DEMIExperiment} object.
+\item[norm.method] See section \ref{ss:advanceanalaysis:demiexperiment} for explanation
+of the same parameter under the \texttt{DEMIExperiment} object.
+\item[clust.method] See section \ref{ss:advanceanalaysis:demiclust} for explanation
+of the same parameter under the \texttt{DEMIClust} object.
+\item[cutoff.pvalue] See section \ref{ss:advanceanalaysis:demiclust} for
+explanation of the same parameter under the \texttt{DEMIClust} object.
+\end{description}
+
+The output files of the \texttt{\textsl{demi}} function starts with the string
+``demi'' and incorporates the \texttt{\textsl{analysis}} parameter, the
+\texttt{\textsl{experiment}} parameter and \texttt{\textsl{filetag}} parameter
+when applied (if applied), separated by an underscore.\\\\
+An example of differential expression analysis:\\\\
+\texttt{\textsl{> demires <- demi(analysis = "gene", celpath = celdir, group =
+c( "BRAIN", "UHR" ), experiment = "maqc", organism = "homo\_sapiens",
+clust.method = demi.wilcox.test.fast, pathway = FALSE)}}\\\\
+An example of differential expression with functional annotation analysis:\\\\
+\texttt{\textsl{> demires <- demi(analysis = "gene", celpath = celdir, group =
+c( "BRAIN", "UHR" ), experiment = "maqc", organism = "homo\_sapiens",
+clust.method = demi.wilcox.test.fast, pathway = TRUE)}}\\\\
+
+
+\subsection{Viewing results}
+
+Using the function \texttt{\textsl{getResultTable}} returns the results stored
+in a \texttt{\textsl{DEMIDiff}} or \texttt{\textsl{DEMIExperiment}} object in
+a \texttt{\textsl{data.frame}}, sorted by the false discovery rate values.
+\\[0.5cm]
+\texttt{\textsl{> head( getResultTable( demidiff ) )}}
+\begin{verbatim}
+         clusterID        targetID probesOnTargetInCluster probesOnTarget
+16694 BRAIN[H]_UHR ENSG00000196628                      90             90
+8039  BRAIN[H]_UHR ENSG00000140538                      93             98
+213   BRAIN[H]_UHR ENSG00000008277                      85             87
+14294 BRAIN[H]_UHR ENSG00000178104                     100            111
+30730 BRAIN[L]_UHR ENSG00000026508                      86             86
+6998  BRAIN[H]_UHR ENSG00000134769                      81             84
+      probesInCluster probesTotal      P.value          FDR geneSymbol
+16694           87116      412770 1.511205e-61 9.148233e-57       TCF4
+8039            87116      412770 2.987339e-56 9.042077e-52      NTRK3
+213             87116      412770 8.492751e-55 1.432182e-50     ADAM22
+14294           87116      412770 9.463343e-55 1.432182e-50    PDE4DIP
+30730          100924      412770 2.402911e-53 2.909252e-49       CD44
+6998            87116      412770 8.659616e-51 8.736975e-47       DTNA
+                                                               description
+16694                transcription factor 4 [Source:HGNC Symbol;Acc:11634]
+8039  neurotrophic tyrosine kinase, receptor, type 3 [Source:HGNC Symbo...
+213           ADAM metallopeptidase domain 22 [Source:HGNC Symbol;Acc:201]
+14294 phosphodiesterase 4D interacting protein [Source:HGNC Symbol;Acc:...
+30730     CD44 molecule (Indian blood group) [Source:HGNC Symbol;Acc:1681]
+6998                     dystrobrevin, alpha [Source:HGNC Symbol;Acc:3057]
+\end{verbatim}
+\texttt{\textsl{> head( getResultTable( customdiff ) )}}
+\begin{verbatim}
+      clusterID        targetID probesOnTargetInCluster probesOnTarget
+16694      tcf4 ENSG00000196628                      90             90
+30730      cd44 ENSG00000026508                      86             86
+77822     calm1 ENSG00000198668                      66             66
+9147       tcf4 ENSG00000148488                       3              3
+17452      tcf4 ENSG00000201010                       3              3
+18657      tcf4 ENSG00000213358                       3              3
+      probesInCluster probesTotal       P.value           FDR geneSymbol
+16694              90      412770  0.000000e+00  0.000000e+00       TCF4
+30730              86      412770  0.000000e+00  0.000000e+00       CD44
+77822              66      412770 1.262975e-278 3.822774e-274      CALM1
+9147               90      412770  1.002291e-11  2.676825e-08    ST8SIA6
+17452              90      412770  1.002291e-11  2.676825e-08        7SK
+18657              90      412770  1.002291e-11  2.676825e-08 AC092933.4
+                                                             description
+16694              transcription factor 4 [Source:HGNC Symbol;Acc:11634]
+30730   CD44 molecule (Indian blood group) [Source:HGNC Symbol;Acc:1681]
+77822 calmodulin 1 (phosphorylase kinase, delta) [Source:HGNC Symbol;...
+9147  ST8 alpha-N-acetyl-neuraminide alpha-2,8-sialyltransferase 6 [S...
+17452                                  7SK RNA [Source:RFAM;Acc:RF00100]
+18657                                                                                            
+\end{verbatim}
+One can see from the table above, that the three genes we used for
+creating custom probe lists were also the best scoring differentially
+expressed genes i.e. genes with the smallest p-values. There are also some other
+genes with p-values below 0.05 because some of these probes match with several
+genes (see the use of \texttt{\textsl{maxtarget}} parameter in the
+section~\ref{ss:advanceanalaysis:demiexperiment} to address this issue).\\\\
+Since both differential expression results (demidiff, customdiff) were obtained
+using the same metadata, meaning that they used the same underlying
+\texttt{\textsl{DEMIExperiment}} object, we can utilize the function
+\texttt{\textsl{attachResult}}. It allows us to attach the results from a
+\texttt{\textsl{DEMIDiff}} object to the initial
+\texttt{\textsl{DEMIExperiment}} object. It is useful in the case where several
+differential expression analyses were made and the user wants to view them
+together in one table. The function \texttt{\textsl{attachResult}} requires two
+parameters: \texttt{\textsl{object}} and \texttt{\textsl{diffObject}}. The first
+parameter \texttt{\textsl{object}} is a \texttt{\textsl{DEMIExperiment}} object
+to which the second parameters \texttt{\textsl{diffObject}} results will be
+attached to. The function \texttt{\textsl{attachResult}} then returns a new
+\texttt{\textsl{DEMIExperiment}} object that has been updated with the results
+from \texttt{\textsl{DEMIDiff}} object. If the results have already been added
+to the \texttt{\textsl{DEMIExperiment}} object, the program will alert the user
+and the results won't be added again, thus prohibiting duplications.
+\\[0.5cm] \texttt{\textsl{> demiresult <- attachResult( demiexp, demidiff )}}\\\\
+\texttt{\textsl{> demiresult <- attachResult( demiresult, customdiff )}}
+\\\\
+The previously described \texttt{\textsl{getResultTable}} function can now be
+used with the newly created \texttt{\textsl{DEMIExperiment}} object.\\[0.5cm]
+\texttt{\textsl{> getResultTable( demiresult )}}
+\begin{verbatim}
+          clusterID        targetID probesOnTargetInCluster probesOnTarget
+77230          tcf4 ENSG00000196628                      90             90
+307301         cd44 ENSG00000026508                      86             86
+778221        calm1 ENSG00000198668                      66             66
+16694  BRAIN[H]_UHR ENSG00000196628                      90             90
+8039   BRAIN[H]_UHR ENSG00000140538                      93             98
+213    BRAIN[H]_UHR ENSG00000008277                      85             87
+       probesInCluster probesTotal       P.value           FDR geneSymbol
+77230               90      412770  0.000000e+00  0.000000e+00       TCF4
+307301              86      412770  0.000000e+00  0.000000e+00       CD44
+778221              66      412770 1.262975e-278 3.822774e-274      CALM1
+16694            87116      412770  1.511205e-61  9.148233e-57       TCF4
+8039             87116      412770  2.987339e-56  9.042077e-52      NTRK3
+213              87116      412770  8.492751e-55  1.432182e-50     ADAM22
+                                                               description
+77230                transcription factor 4 [Source:HGNC Symbol;Acc:11634]
+307301    CD44 molecule (Indian blood group) [Source:HGNC Symbol;Acc:1681]
+778221 calmodulin 1 (phosphorylase kinase, delta) [Source:HGNC Symbol;A...
+16694                transcription factor 4 [Source:HGNC Symbol;Acc:11634]
+8039   neurotrophic tyrosine kinase, receptor, type 3 [Source:HGNC Symb...
+213           ADAM metallopeptidase domain 22 [Source:HGNC Symbol;Acc:201]
+\end{verbatim}
+One can see from the table above that the cluster names previously represented
+in different \texttt{\textsl{DEMIDiff}} objects are now attached to the same
+\texttt{\textsl{DEMIExperiment}} object and can be viewed together.\\\\
+Another function helping the user understand their data is
+\texttt{\textsl{demisummary}} that has two input parameters:
+\texttt{\textsl{object}} and \texttt{\textsl{target}}. The first is a
+\texttt{\textsl{DEMIExperiment}} or \texttt{\textsl{DEMIDiff}} object and the
+second is a vector of ensembl gene ID's or gene symbols (e.g. ``MAOB''), ensembl
+transcript ID's, ensembl peptide ID's or genomic region ID's. If no results have
+been attached to the \texttt{\textsl{DEMIExperiment}} object then only the mean
+normalized expression values over the entire dataset are returned.\\[0.5cm]
+\texttt{\textsl{> demisummary( demiexp, c( "SOX2", "NANOG" ) )}}
+\begin{verbatim}
+         targetID      ALL
+1 ENSG00000111704 76.65586
+2 ENSG00000181449 51.47945
+\end{verbatim}
+\texttt{\textsl{> demisummary( demidiff, c( "SOX2", "NANOG" ) )}}
+\begin{verbatim}
+         targetID    BRAIN      UHR      ALL
+1 ENSG00000111704 69.15389 66.56352 76.65586
+2 ENSG00000181449 61.14888 62.07785 51.47945
+\end{verbatim}
+If some results have been attached to a \texttt{\textsl{DEMIExperiment}} object
+then the function \texttt{\textsl{demisummary}} will also output the means
+over the groups that were used for differential expression analysis, as
+is the case when the input object is a \texttt{\textsl{DEMIDiff}}
+object.\\[0.5cm]
+\texttt{\textsl{> demisummary( demiresult, c( "SOX2", "NANOG" ) )}}
+\begin{verbatim}
+         targetID    BRAIN      UHR      ALL
+1 ENSG00000111704 69.15389 66.56352 76.65586
+2 ENSG00000181449 61.14888 62.07785 51.47945
+\end{verbatim}
+Note that in the latter the mean normalized expression values for the customly
+created probe clusters are not shown. The reason is that no particular
+\textit{CEL} files correspond to these clusters and therefore calculating the
+mean over the normalized expression values can't be done.
+
+\subsection{Graphic representation}
+
+There are two functions \texttt{\textsl{probe.levels}} and
+\texttt{\textsl{probe.plot}} that help to give a visual insight on the
+behaviour of the probes in different \textit{CEL} files. Both functions require
+two input parameters: \texttt{\textsl{object}} and \texttt{\textsl{target}}. The
+\texttt{\textsl{object}} parameter specifies the
+\texttt{\textsl{DEMIExperiment}} object where all the raw and normalized
+expression values are stored. The \texttt{\textsl{target}} parameter
+can be an ensembl gene symbol, ensembl gene ID, ensembl transcript ID, ensembl
+protein ID or an genomic region ID.\\[0.5cm]
+\texttt{\textsl{> probe.levels( demiresult, c( "MAOB" ) )}}
+(Figure~\ref{fig:probelevels})\\[0.5cm]
+\texttt{\textsl{> probe.plot( demiresult, c( "MAOB" ) )}}
+(Figure~\ref{fig:probeplot})
+\begin{figure}
+\centering
+\includegraphics[width=140mm]{MAOB_probe_levels.pdf}
+\caption{Normalized probe levels measuring the gene MAOB}
+\label{fig:probelevels}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=140mm]{MAOB_probe_plot.pdf}
+\caption{Plot of normalized probe levels measuring the gene MAOB}
+\label{fig:probeplot}
+\end{figure}
+
+\section{Advance usage}
+
+\subsection{Advance analysis - DEMIExperiment}
+\label{ss:advanceanalaysis:demiexperiment}
+
+The \texttt{\textsl{DEMIExperiment}} function has several parameters which can
+be used when the user wants to be more stringent in selecting the probes used in the
+analysis or to utilize a custom normalization method.
+\begin{description}
+\item[maxtarget] The \texttt{\textsl{maxtarget}} parameter specifies the upper
+limit of distinct targets a probe can match to i.e. the number of targets a probe
+is designed to measure. For example, if two genes share a common sequence and the
+probe sequence is designed in a way that it matches to both of these genes then
+this probe is designed to measure 2 targets. In the case of
+``transcript'' and ``exon'' analysis the number of targets is also calculated
+against genes, meaning that if two transcripts are measured by the same
+probe but they both correspond to the same gene, the number of distinct targets for this
+probe is 1 (and not 2). All probes matching to more targets
+than set by the \texttt{\textsl{maxtarget}} parameter will be excluded from
+the analysis. The default value for \texttt{\textsl{maxtarget}} is 0, meaning
+that a probe can measure any number of targets.
+\end{description}
+\texttt{\textsl{> demiexp <- DEMIExperiment( analysis = "gene", experiment =
+"maqc", organism\\= "homo\_sapiens", celpath = celdir, \underline{maxtarget = 1}
+) }}
+\begin{description}
+\item[maxprobes] Since hypergeometric probability values are calculated to
+indicate whether the target is differentially expressed between the experimental
+conditions, differentially expressed targets with many matching probes (overrepresented targets) tend to
+occupy the top of differentially expressed target list. To counteract
+this issue the user can set \texttt{\textsl{maxprobes}} parameter which dictates
+the upper limit on the number of probes a target can possess. For targets with more 
+matching probes than allowed by the \texttt{\textsl{maxprobes}} parameter, the
+number of matching probes and the number of differentially expressed matching probes 
+are scaled down to the number of probes set by \texttt{\textsl{maxprobes}}
+parameter. The user can also set the \texttt{\textsl{maxprobes}} parameter to
+``median'' instructing the software to set the \texttt{\textsl{maxprobes}}
+parameter to the value corresponding to the median number of probes per target.
+By default the \texttt{\textsl{maxprobes}} parameter is not set and no scaling
+takes place, which would be the same as setting \texttt{\textsl{maxprobes}} to
+``max''.
+\end{description}
+\texttt{\textsl{> demiexp <- DEMIExperiment( analysis = "gene", experiment =
+"maqc", organism\\= "homo\_sapiens", celpath = celdir, \underline{maxprobes =
+"max"} ) }}\\\\
+\texttt{\textsl{> demiexp <- DEMIExperiment( analysis = "gene", experiment =
+"maqc", organism\\= "homo\_sapiens", celpath = celdir, \underline{maxprobes =
+"median"} ) }}\\\\
+\texttt{\textsl{> demiexp <- DEMIExperiment( analysis = "gene", experiment =
+"maqc", organism\\= "homo\_sapiens", celpath = celdir, \underline{maxprobes =
+13} ) }}
+\begin{description}
+\item[pmsize] The parameter \texttt{\textsl{pmsize}} denotes the minimum
+alignment hit size between the probe and the target sequence. The default for
+\texttt{\textsl{pmsize}} is 25 which means that only perfectly matching probes
+will be regarded as measuring matching targets. If the user sets
+\texttt{\textsl{pmsize}} to 24, then probes with a single mismatch will also be
+regarded as measuring the targets. By setting \texttt{\textsl{pmsize}} parameter
+to 25 might reduce the noise from off-target hybridization. However, the
+kinetics of oligonucleotide hybridization are rather complex and this need not
+be so (when the mismatch occurs in the terminus, for example). In any case, the
+user is allowed to choose a  \texttt{\textsl{pmsize}} between 23 and 25.
+\end{description}
+\texttt{\textsl{> demiexp <- DEMIExperiment( analysis = "gene", experiment =
+"maqc", organism\\= "homo\_sapiens", celpath = celdir, \underline{pmsize = 23} )
+}}
+\begin{description}
+\item[norm.method] The \texttt{\textsl{norm.method}} parameter denotes a
+function to be used for the normalization of the raw expression matrix. It should take
+\texttt{\textsl{matrix}} as input and return the normalized
+\texttt{\textsl{matrix}}. By default the \texttt{\textsl{norm.method}} is set to
+use relative rank normalization (\texttt{\textsl{norm.rrank}}) which normalizes
+all the \textit{CEL} files individually. Each probe will have a rank value
+denoting the procentage of probes with signal intensity value smaller or equal
+to the current probe.
+\end{description}
+\texttt{\textsl{> demiexp <- DEMIExperiment( analysis = "gene", experiment =
+"maqc", organism\\= "homo\_sapiens", celpath = celdir, \underline{norm.method =
+norm.rrank} ) }}\\[0.5cm]
+
+\subsection{Advance analysis - DEMIClust}
+\label{ss:advanceanalaysis:demiclust}
+
+When clustering the probes based on normalized expression matrix the user
+can modify several parameters in a \texttt{\textsl{DEMIClust}} function. For
+example the user can build their own function for clustering or set a specific
+cutoff on the differential expression p-value of a probe.
+\begin{description}
+\item[clust.method] The \texttt{\textsl{clust.method}} parameter is a function
+that is used to cluster the normalized expression matrix of probes. It takes as
+input the \texttt{\textsl{DEMIClust}} object containing information about
+grouping of the \textit{CEL} files and a normalized expression matrix and
+returns a list of probes that are up- or down-regulated. The names of
+the lists are the corresponding cluster names. The user can write a novel
+clustering function as long as the same input and output are used. See
+subsection~\ref{ss:extrafunctionality} for some functions that can be helpful
+in writing a new normalization method.
+\end{description}
+\texttt{\textsl{> demiclust <- DEMIClust( experiment = demiexp, group =
+c("BRAIN", "UHR" ),\\ \underline{clust.method = demi.wilcox.test.fast )}}}
+\begin{description}
+\item[cutoff.pvalue] The \texttt{\textsl{cutoff.pvalue}} parameter dictates the
+statistical p-value cutoff that is used to call statistical significance.
+All probes whose p-value is below the set cutoff will be regarded as
+differentially expressed.
+\end{description}
+\texttt{\textsl{> demiclust <- DEMIClust( experiment = demiexp, group =
+c("BRAIN", "UHR" ),\\ \underline{cutoff.pvalue = 0.05 )}}}\\[0.5cm]
+
+\subsection{Extra functionality}
+\label{ss:extrafunctionality}
+
+This sections describes other functions that the user might find necessary.
+
+\begin{description}
+\item[getAnalysis] Returns the analysis of the \texttt{\textsl{DEMIExperiment}}
+object.\\[0.3cm]
+\texttt{\textsl{> getAnalysis( demiexp )}}
+\end{description}
+\begin{description}
+\item[getExperiment] Returns the name of the experiment in the
+\texttt{\textsl{DEMIExperiment}} object. In the case
+of \texttt{\textsl{DEMIDiff}} and \texttt{\textsl{DEMIClust}} objects this
+function returns the original \texttt{\textsl{DEMIExperiment}} object.\\[0.3cm]
+\texttt{\textsl{> getExperiment( demiexp )}}
+\end{description}
+\begin{description}
+\item[getCelpath] Returns the directory or the files vector of the \textit{CEL}
+files in the \texttt{\textsl{DEMIExperiment}} object.\\[0.3cm]
+\texttt{\textsl{> getCelpath( demiexp )}}
+\end{description}
+\begin{description}
+\item[getOrganism] Returns the organism in the \texttt{\textsl{DEMIExperiment}}
+object.\\[0.3cm]
+\texttt{\textsl{> getOrganism( demiexp )}}
+\end{description}
+\begin{description}
+\item[getArraytype] Returns the microarray platform type in the
+\texttt{\textsl{DEMIExperiment}} object.\\[0.3cm]
+\texttt{\textsl{> getArraytype( demiexp )}}
+\end{description}
+\begin{description}
+\item[getMaxtargets] Returns the maximum number of targets a probe is allowed to
+measure from the \texttt{\textsl{DEMIExperiment}} object.\\[0.3cm]
+\texttt{\textsl{> getMaxtargets( demiexp )}}
+\end{description}
+\begin{description}
+\item[getMaxprobes] Returns the maximum number of probes a target can have a
+match against in the \texttt{\textsl{DEMIExperiment}} object.\\[0.3cm]
+\texttt{\textsl{> getMaxprobes( demiexp )}}
+\end{description}
+\begin{description}
+\item[getAnnotation] Returns the annotation table in the
+\texttt{\textsl{DEMIExperiment}} object.\\[0.3cm]
+\texttt{\textsl{> getAnnotation( demiexp )}}
+\end{description}
+\begin{description}
+\item[getAlignment] Returns the sequence alignment information table in the
+\texttt{\textsl{DEMIExperiment}} object. This can be a very useful function
+if the user wants to build custom filters for probes when normalizing the
+raw expression matrix.\\[0.3cm]
+\texttt{\textsl{> getAlignment( demiexp )}}
+\end{description}
+\begin{description}
+\item[getCytoband] Returns the karyotype information table in the
+\texttt{\textsl{DEMIExperiment}} object. It returns it only if the
+\texttt{\textsl{analysis}} paramater of the
+\texttt{\textsl{DEMIExperiment}} object has been set to ``genome''.\\[0.3cm]
+\texttt{\textsl{> getCytoband( demiexp )}}
+\end{description}
+\begin{description}
+\item[getCelMatrix] Returns the raw expression matrix in the
+\texttt{\textsl{DEMIExperiment}} object. This can be used to view raw probe
+signal intensities of probes. Note that the probe ID's are returned as row
+names.\\[0.3cm]
+\texttt{\textsl{> getCelMatrix( demiexp )}}
+\end{description}
+\begin{description}
+\item[getNormMatrix] Returns the normalized expression matrix in the
+\texttt{\textsl{DEMIExperiment}} object. Note that the probe ID's are
+returned as row names.\\[0.3cm]
+\texttt{\textsl{> getNormMatrix( demiexp )}}
+\end{description}
+\begin{description}
+\item[getProbeLevel] Returns the normalized probe levels of selected probes of
+a \texttt{\textsl{DEMIExperiment}} or a \texttt{\textsl{DEMIDiff}}
+object. Note that the probe ID's are returned as row names.\\[0.3cm]
+\texttt{\textsl{> getProbeLevel( demiexp, c( 1171,1182 ), TRUE )}}\\[0.3cm]
+\texttt{\textsl{> getProbeLevel( demidiff, c( 1171,1182 ), TRUE )}}
+\end{description}
+\begin{description}
+\item[getTargetProbes] Returns the probes of selected targets of
+a \texttt{\textsl{DEMIExperiment}} or a \texttt{\textsl{DEMIDiff}}
+object. The target can be case insensitive.\\[0.3cm]
+\texttt{\textsl{> getTargetProbes( demiexp, "MAOB" )}}\\[0.3cm]
+\texttt{\textsl{> getTargetProbes( demidiff, "MAOB" )}}
+\end{description}
+\begin{description}
+\item[getTargetAnnotation] Returns the annotation of selected targets of a
+\texttt{\textsl{DEMIExperiment}} object. The target can be case
+insensitive.\\[0.3cm]
+\texttt{\textsl{> getTargetAnnotation( demiexp, "MAOB" )}}
+\end{description}
+\begin{description}
+\item[getGroup] Returns the \texttt{\textsl{DEMIGroup}} object of a
+\texttt{\textsl{DEMIClust}} or a \texttt{\textsl{DEMIDiff}} object.\\[0.3cm]
+\texttt{\textsl{> getGroup( demiclust )}}\\[0.3cm]
+\texttt{\textsl{> getGroup( demidiff )}}
+\end{description}
+\begin{description}
+\item[getClustMethod] Returns the clustering function used in the
+\texttt{\textsl{DEMIClust}} object.\\[0.3cm]
+\texttt{\textsl{> getClustMethod( demiclust )}}
+\end{description}
+\begin{description}
+\item[getCutoffPvalue] Returns the cutoff p-value used in the
+\texttt{\textsl{DEMIClust}} object.\\[0.3cm]
+\texttt{\textsl{> getCutoffPvalue( demiclust )}}
+\end{description}
+\begin{description}
+\item[getCluster] Returns the clusters of the \texttt{\textsl{DEMIClust}}
+object.\\[0.3cm]
+\texttt{\textsl{> getCluster( demiclust )}}
+\end{description}
+\begin{description}
+\item[getName] Returns the name of the \texttt{\textsl{DEMIDiff}}
+object.\\[0.3cm]
+\texttt{\textsl{> getName( demidiff )}}
+\end{description}
+\begin{description}
+\item[getGroupA] Returns the group A name of the \texttt{\textsl{DEMIGroup}}
+object that is stored within the \texttt{\textsl{DEMIClust}} or
+\texttt{\textsl{DEMIDiff}} object.\\[0.3cm]
+\texttt{\textsl{> getGroupA( getGroup( demiclust ) )}}\\[0.3cm]
+\texttt{\textsl{> getGroupA( getGroup( demidiff ) )}}
+\end{description}
+\begin{description}
+\item[getGroupB] Returns the group B name of the \texttt{\textsl{DEMIGroup}}
+object stored within the \texttt{\textsl{DEMIClust}} or
+\texttt{\textsl{DEMIDiff}} object.\\[0.3cm]
+\texttt{\textsl{> getGroupB( getGroup( demiclust ) )}}\\[0.3cm]
+\texttt{\textsl{> getGroupB( getGroup( demidiff ) )}}
+\end{description}
+\begin{description}
+\item[getIndexA] Returns the group A column indexes of the normalized expression
+matrix of the \texttt{\textsl{DEMIGroup}} object that is stored within
+the \texttt{\textsl{DEMIClust}} or \texttt{\textsl{DEMIDiff}} object.\\[0.3cm]
+\texttt{\textsl{> getIndexA( getGroup( demiclust ) )}}\\[0.3cm]
+\texttt{\textsl{> getIndexA( getGroup( demidiff ) )}}
+\end{description}
+\begin{description}
+\item[getIndexB] Returns the group B column indexes of the normalized expression
+matrix of the \texttt{\textsl{DEMIGroup}} object that is stored within
+the \texttt{\textsl{DEMIClust}} or \texttt{\textsl{DEMIDiff}} object.\\[0.3cm]
+\texttt{\textsl{> getIndexB( getGroup( demiclust ) )}}\\[0.3cm]
+\texttt{\textsl{> getIndexB( getGroup( demidiff ) )}}
+\end{description}
+\begin{description}
+\item[getGroupNames] In the case when probe clusters were manually created the
+function \texttt{\textsl{getGroupNames}} returns the names of the probe clusters
+set by the user in the \texttt{\textsl{DEMIGroup}} object that is stored within
+the \texttt{\textsl{DEMIClust}} or \texttt{\textsl{DEMIDiff}} object.\\[0.3cm]
+\texttt{\textsl{> getGroupNames( getGroup( demicustom ) )}}\\[0.3cm]
+\texttt{\textsl{> getGroupNames( getGroup( customdiff ) )}}
+\end{description}
+
+\section{Summary}
+
+To sum up the functionality of DEMI package the user is only required to run
+four functions \texttt{\textsl{DEMIExperiment}}, \texttt{\textsl{DEMIClust}},
+\texttt{\textsl{DEMIDiff}} and \texttt{\textsl{getResultTable}} to retrieve a
+table of differentially expressed targets. The \texttt{\textsl{DEMIExperiment}}
+holds the metadata and normalizes the raw expression matrix while
+\texttt{\textsl{DEMIClust}} clusters the probes into up- or down-regulated
+clusters based on the selected features in the names of the \textit{CEL} files.
+\texttt{\textsl{DEMIDiff}} evaluates differential expression of the targets with
+hypergeometric probability while also annotating the results. Finally the user
+can review the results by utilizing the \texttt{\textsl{getResultTable}}
+function. This whole functionality is summarized with a function
+\texttt{\textsl{demi}} that performs all of the above with a single command
+and prints out the results into the users working directory. In case of
+questions, do not hesitate to ask. We will gladly help you to get the hang of
+the software and the methodology involved.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

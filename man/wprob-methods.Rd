@@ -1,0 +1,32 @@
+\docType{methods}
+\name{wprob}
+\alias{wprob}
+\title{Calculates wilcoxon's upper and lower probabilities}
+\usage{
+  wprob(m, n)
+}
+\arguments{
+  \item{m}{An \code{integer}. Defines the test sample
+  size.}
+
+  \item{n}{An \code{integer}. Defines the reference sample
+  size.}
+}
+\value{
+  A \code{list}. Returns a \code{list} of all possible
+  lower and upper tail p-values defined by the sum of the
+  possible rank combinations.
+}
+\description{
+  Calculates the wilcoxon's upper and lower probabilities
+  for each possible rank sum defined by the size of the
+  test and reference samples.
+}
+\examples{
+# For test sample 4 and reference sample 6 calculate wilcoxon's upper and lower probabilities
+wprob( 4, 6 )
+}
+\author{
+  Sten Ilmjarv
+}
+

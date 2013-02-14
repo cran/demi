@@ -1,0 +1,235 @@
+\docType{methods}
+\name{DEMIExperiment}
+\alias{DEMIExperiment}
+\title{Creates a \code{DEMIExperiment} object}
+\usage{
+  DEMIExperiment(analysis = "transcript",
+    celpath = character(), experiment = character(),
+    organism = character(), maxtargets = 0,
+    maxprobes = character(), pmsize = 25,
+    sectionsize = character(), norm.method = norm.rrank,
+    filetag = character())
+}
+\arguments{
+  \item{analysis}{A \code{character}. Defines the analysis
+  type. It can be either 'transcript', 'gene', 'exon' or
+  'genome'. The default value is 'transcript'. For 'genome'
+  analysis \code{sectionsize} parameter needs to be defined
+  as well.}
+
+  \item{celpath}{A \code{character}. It can point to the
+  directory containing CEL files or is a vector that points
+  directly to the CEL files.}
+
+  \item{experiment}{A \code{character}. A custom name of
+  the experiment defined by the user (e.g.
+  'myexperiment').}
+
+  \item{organism}{A \code{character}. The name of the
+  species the microarrays are measuring (e.g.
+  'homo_sapiens' or 'mus_musculus') given in lowercase
+  letters and words are separated by underscore.}
+
+  \item{maxtargets}{A \code{numeric}. The maximum number of
+  allowed targets (e.g. genes or transcripts) one probe can
+  have a match against. If to set it to 1 it means that the
+  probe can match only one gene. If the \code{analysis} is
+  set to 'transcript' the program still calculates the
+  number of matches on genes, not transcripts. Hence a
+  probe matching two transcripts on the same gene would be
+  included but a probe matching two transcripts on
+  different genes would not be included. The value needs to
+  be a positive integer or 0.  By default \code{maxtargets}
+  is set to 0.}
+
+  \item{maxprobes}{A \code{character}. Sets the number of
+  unique probes a target is allowed to have a match
+  against. All the targets that yield more alignments to
+  different probes then set by \code{maxprobes} will be
+  scaled down to the number defined by the \code{maxprobes}
+  parameter. It can be either a positive integer or set as
+  'median' or 'max' - 'median' meaning the median number of
+  probes matching to all targets and 'max' meaning the
+  maximum number of probes matching to a target. By default
+  \code{maxprobes} is not set which is the same as setting
+  \code{maxprobes} to 'max'.}
+
+  \item{pmsize}{A \code{numeric}. The minimum number of
+  consecutive nucleotides that need to match perfectly
+  against the target sequence. It can be either 23, 24 or
+  25. This means that alignments with smaller perfect match
+  size will not be included in the experiment set up. The
+  default value is 25.}
+
+  \item{sectionsize}{A \code{numeric}. This is only used if
+  the \code{analysis} parameter is set to 'genome'. It
+  defines the length of the genomic target region used in
+  the 'genome' analysis. Currently the only available
+  section sizes are 100000, 500000 and 1000000.}
+
+  \item{norm.method}{A \code{function}. Defines a function
+  used to normalize the raw expression values. The default
+  normalization function is \code{norm.rank}.}
+
+  \item{filetag}{A \code{character}. This is a custom
+  string that can be used to identify the experiment. At
+  the current development stage this parameter is used only
+  when using the function \code{demi}, where the output
+  files will contain the specified filetag.}
+}
+\value{
+  A \code{DEMIExperiment} object.
+}
+\description{
+  This function creates a \code{DEMIExperiment} object. It
+  loads and stores the experiment metadata such as
+  annotation and alignment information and raw expression
+  matrix from CEL files. It then normalizes the raw
+  expression matrix and stores both expression matrices in
+  a \code{DEMICel} object stored under the created
+  \code{DEMIExperiment} object.
+}
+\details{
+  After the analysis has been completed the user can add
+  the results from the analysis to the original
+  \code{DEMIExperiment} object with the function
+  \code{attachResult}. Then the function
+  \code{getResultTable} can be used to retrieve the results
+  from the \code{DEMIExperiment} object. Other useful
+  functions are \code{getNormMatrix} to retrieve normalized
+  expression matrix and \code{getCelMatrix} to retrieve the
+  raw expression matrix. In both cases the probe ID's are
+  present as row names.
+
+  Further specification of the parameters: \itemize{
+  \item{maxtargets}{ When \code{analysis} is set to 'gene'
+  then all probes that match to more genes then allowed by
+  \code{maxtargets} parameter will not be included in the
+  analysis. For 'transcript' and 'exon' analysis the number
+  is also calculated on a gene level. For example if
+  \code{maxtargets} is set to one and a probe matches to
+  two transcripts but on the same gene, then this probe
+  will still be used in the analysis. However if the probe
+  matches two transcripts on different genes then this
+  probe will not be included in the analysis. For 'genome'
+  analysis the probe in most cases matches to two genomic
+  sections because adjacent sections overlap by 50%.
+  However this is considered as one match and the probe
+  will still be used in the analysis.  }
+  \item{norm.method}{ Every user can apply their own
+  normalization method by writing a custom normalization
+  function. The function should take in raw expression
+  matrix and return the normalized expression matrix where
+  probe ID's are kept as rownames and column names are CEL
+  file names. The normalized expression matrix will then be
+  stored as part of the \code{DEMIExperiment} object.  }
+  \item{sectionsize}{ The \code{sectionsize} parameter
+  defines the length of the genomic target region.
+  Currenlty \code{sectionsize} can be set as: 100000,
+  500000 and 1000000. All adjacent sections, except the
+  ones on chromosome ends, overlap with the next adjacent
+  section by 50%. It ensures the all probes matching to
+  genome will be assigned to at least one genomic section.
+  This parameter is required when \code{analysis} is set to
+  'genome'.  } \item{norm.method}{ The \code{norm.method}
+  defines a function to use for the normalization of raw
+  expression matrix. The user can implement his/her own
+  function for the normalization procedure. The function
+  should take in raw expression matrix and return the
+  normalized expression matrix where probe ID's are kept as
+  rownames and column names are CEL file names.  } }
+}
+\examples{
+\dontrun{
+
+# To use the example we need to download a subset of CEL files from http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819 published by Pradervand et al. 2008.
+
+# Set the destination folder where the downloaded files fill be located. It can be any folder of your choosing.
+destfolder <- "demitest/testdata/"
+
+# Download packed CEL files and change the names according to the feature they represent (for example to include UHR or BRAIN in them to denote the features).
+# It is a good practice to name the files according to their features which allows easier identification of the files later.
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247694/suppl/GSM247694.CEL.gz", destfile = paste( destfolder, "UHR01_GSM247694.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247695/suppl/GSM247695.CEL.gz", destfile = paste( destfolder, "UHR02_GSM247695.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247698/suppl/GSM247698.CEL.gz", destfile = paste( destfolder, "UHR03_GSM247698.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247699/suppl/GSM247699.CEL.gz", destfile = paste( destfolder, "UHR04_GSM247699.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247696/suppl/GSM247696.CEL.gz", destfile = paste( destfolder, "BRAIN01_GSM247696.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247697/suppl/GSM247697.CEL.gz", destfile = paste( destfolder, "BRAIN02_GSM247697.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247700/suppl/GSM247700.CEL.gz", destfile = paste( destfolder, "BRAIN03_GSM247700.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247701/suppl/GSM247701.CEL.gz", destfile = paste( destfolder, "BRAIN04_GSM247701.CEL.gz", sep = "" ) )
+
+# We need the gunzip function (located in the R.utils package) to unpack the gz files.
+# Also we will remove the original unpacked files for we won't need them.
+library( R.utils )
+for( i in list.files( destfolder ) ) {
+	gunzip( paste( destfolder, i, sep = "" ), remove = TRUE )
+}
+
+# Now we can continue the example of the function DEMIExperiment
+
+# Basic experiment set up.
+demiexp <- DEMIExperiment(analysis = 'gene', celpath = destfolder,
+			experiment = 'myexperiment', organism = 'homo_sapiens')
+
+# Run basic experiment set up but this time do 'transcript' analysis.
+demiexp <- DEMIExperiment(analysis = 'transcript', celpath = destfolder,
+			experiment = 'myexperiment', organism = 'homo_sapiens')
+
+# Run basic experiment set up but this time do 'transcript' analysis.
+demiexp <- DEMIExperiment(analysis = 'exon', celpath = destfolder,
+			experiment = 'myexperiment', organism = 'homo_sapiens' )
+
+# For genome analysis do not forget to specify the sectionsize parameter.
+demiexp <- DEMIExperiment(analysis = 'genome', celpath = destfolder,
+			experiment = 'myexperiment', organism = 'homo_sapiens', sectionsize = 500000)
+
+# Specify experiment with specific pmsize; the standard length for Affymetrix microarray probes is 25 nucleotides.
+demiexp <- DEMIExperiment(analysis = 'gene', celpath = destfolder,
+			experiment = 'myexperiment', organism = 'homo_sapiens', pmsize = 23)
+
+# Specify experiment by setting maxtargets to 1.
+demiexp <- DEMIExperiment(analysis = 'gene', celpath = destfolder,
+			experiment = 'myexperiment', organism = 'homo_sapiens', maxtargets = 1)
+
+# Specify experiment by setting maxprobes to 'median'.
+demiexp <- DEMIExperiment(analysis = 'gene', celpath = destfolder,
+			experiment = 'myexperiment', organism = 'homo_sapiens', maxprobes = 'median')
+
+# Retrieve the alignment information from the DEMIExperiment object.
+head( getAlignment( demiexp ) )
+
+# Retrieve the annotation information from the DEMIExperiment object.
+head( getAnnotation( demiexp ) )
+
+# Retrieve the raw expression matrix from the DEMIExperiment object.
+head( getCelMatrix( demiexp ) )
+
+# Retrieve the normalized expression matrix from the DEMIExperiment object.
+head( getNormMatrix( demiexp ) )
+
+#####################
+# If the user has done the analysis and wishes to add the results to the original DEMIExperiment object.
+#####################
+
+# Create clusters with an optimized wilcoxon's rank sum test incorporated within demi that precalculates the probabilities.
+demiclust <- DEMIClust( demiexp, group = c( "BRAIN", "UHR" ), clust.method = demi.wilcox.test.fast )
+# Calcuate differential expression
+demidiff <- DEMIDiff( demiclust )
+
+# Attach the results to the original DEMIExperiment object
+demiexp <- attachResult( demiexp, demidiff )
+
+# Retrieve the results from the DEMIExperiment object
+head( getResultTable( demiexp ) )
+
+}
+}
+\author{
+  Sten Ilmjarv
+}
+\seealso{
+  \code{DEMIClust}, \code{DEMIResult},
+  \code{getResultTable}, \code{getResult},
+  \code{attachResult}
+}
+

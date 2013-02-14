@@ -1,0 +1,28 @@
+\docType{methods}
+\name{makeDEMIResultsTable}
+\alias{makeDEMIResultsTable}
+\title{Returns a \code{data.frame} of the differential expression results}
+\usage{
+  makeDEMIResultsTable(input = "list")
+}
+\arguments{
+  \item{input}{A \code{list}. Represents a \code{list} of
+  \code{DEMIResult} object.}
+}
+\value{
+  Returns a \code{data.frame} of the differential
+  expression analysis results stored in the
+  \code{DEMIResult} objects.
+}
+\description{
+  Returns a \code{data.frame} of the differential
+  expression results stored in the \code{DEMIResult}
+  object. It is used internally by DEMI methods.
+}
+\author{
+  Sten Ilmjarv
+}
+\seealso{
+  \code{DEMIResult}
+}
+

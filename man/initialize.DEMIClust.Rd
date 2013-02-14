@@ -1,0 +1,21 @@
+\name{initialize.DEMIClust}
+\alias{initialize.DEMIClust}
+\title{Initializes the \code{DEMIClust} object}
+\usage{
+  initialize.DEMIClust(.Object, ...)
+}
+\arguments{
+  \item{.Object}{A \code{DEMIClust} object.}
+
+  \item{...}{Additional arguments that may never be used.}
+}
+\value{
+  Returns a \code{DEMIClust} object.
+}
+\description{
+  Initializes the \code{DEMIClust} object.
+}
+\author{
+  Sten Ilmjarv
+}
+

@@ -1,0 +1,25 @@
+\docType{methods}
+\name{makeUCSCLink}
+\alias{makeUCSCLink}
+\title{Make UCSC link}
+\usage{
+  makeUCSCLink(result)
+}
+\arguments{
+  \item{result}{A \code{data.frame}. A \code{data.frame}
+  that consists of chromosome name and start and end
+  coordinates to be used to make the UCSC link.}
+}
+\value{
+  The input \code{data.frame} with added UCSC link as the
+  last column.
+}
+\description{
+  The function \code{makeUCSCLink} makes a UCSC link of
+  every genomic region in the specified \code{data.frame}.
+  It is used internally in DEMI analysis.
+}
+\author{
+  Sten Ilmjarv
+}
+

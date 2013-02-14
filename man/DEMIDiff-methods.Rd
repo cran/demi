@@ -1,0 +1,93 @@
+\docType{methods}
+\name{DEMIDiff}
+\alias{DEMIDiff}
+\title{Creates a \code{DEMIDiff} object}
+\usage{
+  DEMIDiff(cluster = "DEMIClust")
+}
+\arguments{
+  \item{cluster}{A \code{DEMIClust} object. The
+  \code{DEMIClust} object that holds the clusters used in
+  the analysis.}
+}
+\value{
+  A \code{DEMIDiff} object.
+}
+\description{
+  The \code{DEMIDiff} object calculates differential
+  expression and holds the analysis results, results of
+  clustering and the original metadata of the experiment.
+  To retrieve the results from the \code{DEMIDiff} object
+  use the the function \code{getResultsTable} that returns
+  the results as a \code{data.frame}.
+}
+\details{
+  The \code{DEMIDiff} object calculates the differential
+  expression for every cluster in the \code{DEMIClust}
+  object set by the \code{cluster} parameter. The results
+  are then stored in the \code{DEMIDiff} object under the
+  slot \code{result} as a \code{DEMIResult} object. This
+  object can be retrieved with the function
+  \code{getResult} but most of the times it is recommended
+  to use the function \code{getResultTable} which returns
+  the results in a \code{data.frame} sorted by the FDR
+  values.
+}
+\examples{
+\dontrun{
+
+# To use the example we need to download a subset of CEL files from http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819 published by Pradervand et al. 2008.
+
+# Set the destination folder where the downloaded files fill be located. It can be any folder of your choosing.
+destfolder <- "demitest/testdata/"
+
+# Download packed CEL files and change the names according to the feature they represent (for example to include UHR or BRAIN in them to denote the features).
+# It is a good practice to name the files according to their features which allows easier identification of the files later.
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247694/suppl/GSM247694.CEL.gz", destfile = paste( destfolder, "UHR01_GSM247694.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247695/suppl/GSM247695.CEL.gz", destfile = paste( destfolder, "UHR02_GSM247695.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247698/suppl/GSM247698.CEL.gz", destfile = paste( destfolder, "UHR03_GSM247698.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247699/suppl/GSM247699.CEL.gz", destfile = paste( destfolder, "UHR04_GSM247699.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247696/suppl/GSM247696.CEL.gz", destfile = paste( destfolder, "BRAIN01_GSM247696.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247697/suppl/GSM247697.CEL.gz", destfile = paste( destfolder, "BRAIN02_GSM247697.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247700/suppl/GSM247700.CEL.gz", destfile = paste( destfolder, "BRAIN03_GSM247700.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247701/suppl/GSM247701.CEL.gz", destfile = paste( destfolder, "BRAIN04_GSM247701.CEL.gz", sep = "" ) )
+
+# We need the gunzip function (located in the R.utils package) to unpack the gz files.
+# Also we will remove the original unpacked files for we won't need them.
+library( R.utils )
+for( i in list.files( destfolder ) ) {
+	gunzip( paste( destfolder, i, sep = "" ), remove = TRUE )
+}
+
+# Now we can continue the example of the function DEMIDiff
+
+# Set up an experiment.
+demiexp <- DEMIExperiment(analysis = 'gene', celpath = destfolder,
+			experiment = 'myexperiment', organism = 'homo_sapiens')
+
+# Create clusters with an optimized wilcoxon's rank sum test incorporated within demi that precalculates the probabilities.
+demiclust <- DEMIClust( demiexp, group = c( "BRAIN", "UHR" ), clust.method = demi.wilcox.test.fast )
+
+# Calcuate differential expression
+demidiff <- DEMIDiff( demiclust )
+
+# Retrieve the results in a 'data.frame'
+head( getResultTable( demidiff ) )
+
+# Attach the results to the original 'DEMIExperiment' object
+demiexp <- attachResult( demiexp, demidiff )
+
+# Retrieve the results from the 'DEMIExperiment' object
+head( getResultTable( demiexp ) )
+
+}
+}
+\author{
+  Sten Ilmjarv
+}
+\seealso{
+  \code{DEMIExperiment}, \code{DEMIClust},
+  \code{DEMIResult}, \code{getResultTable},
+  \code{getResult}, \code{attachResult}
+}
+

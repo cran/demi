@@ -1,0 +1,27 @@
+\docType{methods}
+\name{createGroup}
+\alias{createGroup}
+\alias{createGroup,DEMIClust-method}
+\title{Creates a \code{DEMIGroup} object}
+\arguments{
+  \item{object}{A \code{DEMIClust} object.}
+}
+\value{
+  Returns a \code{DEMIClust} object that includes a
+  \code{DEMIGroup} objec as the \code{group} parameter of
+  the object.
+}
+\description{
+  The function \code{createGroup} creates a
+  \code{DEMIGroup} object for \code{DEMIClust} object. This
+  function is used internally by DEMI analysis when
+  clusters are created automatically from normalized
+  expression matrix.
+}
+\author{
+  Sten Ilmjarv
+}
+\seealso{
+  \code{DEMIClust}, \code{DEMIGroup}
+}
+

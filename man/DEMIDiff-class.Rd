@@ -1,0 +1,26 @@
+\name{DEMIDiff-class}
+\alias{DEMIDiff-class}
+\title{Class \code{DEMIDiff}}
+\arguments{
+  \item{cluster}{A \code{DEMIClust} object. Holds
+  information about the clusters in a \code{DEMIClust}
+  object that it itself contains the \code{DEMIExperiment}
+  object were experiment metadata such as alignment
+  information and annotation is held.}
+
+  \item{name}{A \code{character}. A specific name of the
+  differential expression analysis (e.g. 'BRAINvsUHR') that
+  is generated according to the group names.}
+
+  \item{result}{A \code{DEMIResult} object. Holds the
+  \code{DEMIResult} object of the analysis.}
+}
+\description{
+  The class \code{DEMIDiff} holds the analysis results,
+  results of clustering and the original metadata of the
+  experiment.
+}
+\author{
+  Sten Ilmjarv
+}
+

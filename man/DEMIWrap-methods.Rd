@@ -1,0 +1,265 @@
+\docType{methods}
+\name{demi}
+\alias{demi}
+\title{A wrapper for DEMI analysis}
+\usage{
+  demi(analysis = "transcript", celpath = character(),
+    experiment = character(), organism = character(),
+    maxtargets = 0, maxprobes = character(), pmsize = 25,
+    sectionsize = character(), group = character(),
+    norm.method = norm.rrank, filetag = character(),
+    cluster = list(), clust.method = function() { },
+    cutoff.pvalue = 0.05, pathway = logical())
+}
+\arguments{
+  \item{analysis}{A \code{character}. Defines the analysis
+  type. It can be either 'transcript', 'gene', 'exon' or
+  'genome'. The default value is 'transcript'. For 'genome'
+  analysis \code{sectionsize} parameter needs to be defined
+  as well.}
+
+  \item{celpath}{A \code{character}. It can point to the
+  directory containing CEL files or is a vector that points
+  directly to the CEL files.}
+
+  \item{experiment}{A \code{character}. A custom name of
+  the experiment defined by the user (e.g.
+  'myexperiment').}
+
+  \item{organism}{A \code{character}. The name of the
+  species the micrroarrays are measuring (e.g.
+  'homo_sapiens' or 'mus_musculus') given in lowercase and
+  words separated by underscore.}
+
+  \item{maxtargets}{A \code{numeric}. The maximum number of
+  allowed targets (e.g. genes or transcripts) one probe can
+  match against. If to set it to 1 it means that the probe
+  can match only one gene. If the \code{analysis} is set to
+  'transcript' the program still calculates the number of
+  matches on genes. Hence a probe matching two transcripts
+  on the same gene would be included but a probe matching
+  two transcripts on different genes would not be included.
+  The value needs to be a positive integer or 0. By default
+  \code{maxtargets} is set to 0.}
+
+  \item{maxprobes}{A \code{character}. Sets the number of
+  unique probes a target is allowed to have a match
+  against.  All the targets that yield more alignments to
+  different probes then set by \code{maxprobes} will be
+  scaled down to the number defined by the \code{maxprobes}
+  parameter. It can be either a positive integer or set as
+  'median' or 'max' - 'median' meaning the median number of
+  probes matching to all targets and 'max' meaning the
+  maximum number of probes matching to a target. By default
+  \code{maxprobes} is not set which is the same as setting
+  \code{maxprobes} to 'max'.}
+
+  \item{pmsize}{A \code{numeric}. The minimum number of
+  consecutive nucleotides that need to match perfectly
+  against the target sequence. It can be either 23, 24 or
+  25. This means that alignments with smaller perfect match
+  size will not be included in the experiment set up. The
+  default value is 25.}
+
+  \item{sectionsize}{A \code{numeric}. This is only used if
+  the \code{analysis} parameter is set to 'genome'. It
+  defines the length of the genomic target region used in
+  the 'genome' analysis.}
+
+  \item{group}{A \code{character}. Defines the groups that
+  are used for clustering (e.g 'group = c("test",
+  "control")').  It uses \code{grep} function to locate the
+  group names from the CEL file names and then builds index
+  vectors determining which files belong to which groups.}
+
+  \item{norm.method}{A \code{function}. Defines a function
+  used to normalize the raw expression values. The default
+  normalization function is \code{norm.rank}.}
+
+  \item{filetag}{A \code{character}. This is a custom
+  string that can be used to identify the experiment. It
+  incorporates it to the names of the output files.}
+
+  \item{cluster}{A \code{list}. Holds the probes of
+  different clusters in a \code{list}.}
+
+  \item{clust.method}{A \code{function}. Defines the
+  function used for clustering. The user can build a custom
+  clustering function. The input of the custom function
+  needs to be a \code{DEMIClust} object and the output is a
+  \code{list} of probes, where each list corresponds to a
+  specific cluster. The default function is
+  \code{demi.wilcox.test} that implements the
+  \code{wilcox.test} function. However we recommend to use
+  the function \code{demi.wilcox.test.fast} that uses a
+  custom \code{wilcox.test} and runs a lot faster.}
+
+  \item{cutoff.pvalue}{A \code{numeric}. Sets the cut-off
+  p-value used for determining statistical significance of
+  the probes when clustering the probes into clusters.}
+
+  \item{pathway}{A \code{logical}. If set to TRUE the
+  functional annotation analysis is done on top of
+  differential expression analysis.}
+}
+\value{
+  A list containing the \code{DEMIExperiment} object where
+  differential expression results have been added to and a
+  \code{data.frame} consisting of the functional annotation
+  analysis results.
+}
+\description{
+  Function \code{demi} is a wrapper for the whole DEMI
+  analysis. First it creates a \code{DEMIExperiment}
+  object, then uses it to create a \code{DEMIClust} object
+  that contains the list of clustered probes and then
+  performs differential expression analysis by running the
+  function \code{DEMIDiff} that creates \code{DEMIDiff}
+  object. The latter contains the results of the
+  differential expression analysis. It also prints out the
+  results to the working directory. If parameter
+  \code{pathway} is set to TRUE, it also performs gene
+  ontology analysis on the results in \code{DEMIDiff}
+  object to determine statistically significant gene
+  ontology categories (it also prints out those in the
+  working directory with the file containing the string
+  'pathway'). It then returns a list containing the
+  \code{DEMIExperiment} object where the results have been
+  attached to and a \code{data.frame} that contains the
+  functional annotation analysis results. NB! The results
+  will be printed out in the working directory.
+}
+\details{
+  Instead of automatically clustered probes
+  \code{DEMIClust} object can use user defined lists of
+  probes for later calculation of differential expression.
+  This is done by setting the \code{cluster} parameter. It
+  overrides the default behaviour and no actual clustering
+  occurs. Instead the list of probes defined in the
+  \code{cluster} parameter are considered as already
+  clustered probes. The list needs to contain proper names
+  for probe vectors so that they would be recognizable
+  later. Also instead of using the default clustering
+  method the user can write his/her own function for
+  clustering probes based on the expression values.
+
+  Further specification of the parameters: \itemize{
+  \item{maxtargets}{ When \code{analysis} is set to 'gene'
+  then all probes that match to more genes then allowed by
+  \code{maxtargets} parameter will not be included in the
+  analysis. For 'transcript' and 'exon' analysis the number
+  is also calculated on a gene level. For example if
+  \code{maxtargets} is set to one and a probe matches to
+  two transcripts but on the same gene, then this probe
+  will still be used in the analysis. However if the probe
+  matches two transcripts on different genes then this
+  probe will not be included in the analysis. For 'genome'
+  analysis the probe in most cases matches to two genomic
+  sections because adjacent sections overlap by 50%.
+  However this is considered as one match and the probe
+  will still be used in the analysis.  }
+  \item{norm.method}{ Every user can apply their own
+  normalization method by writing a custom normalization
+  function. The function should take in raw expression
+  matrix and return the normalized expression matrix where
+  probe ID's are kept as rownames and column names are CEL
+  file names. The normalized expression matrix will then be
+  stored as part of the \code{DEMIExperiment} object.  }
+  \item{sectionsize}{ The \code{sectionsize} parameter
+  defines the length of the genomic target region.
+  Currenlty \code{sectionsize} can be set as: 100000,
+  500000 and 1000000. All adjacent sections, except the
+  ones on chromosome ends, overlap with the next adjacent
+  section by 50%. It ensures the all probes matching to
+  genome will be assigned to at least one genomic section.
+  This parameter is required when \code{analysis} is set to
+  'genome'.  } \item{group}{ All the CEL files used in the
+  analysis need to contain at least one of the names
+  specified in the \code{group} parameter because they
+  determine what groups to compare against each other. It
+  is also a good practice to name the CEL files to include
+  their common features. However if a situation arises
+  where the group/feature name occurs in all filenames then
+  the user can set group names with specific filenames by
+  seperating names in one group with the "|" symbol. For
+  example \code{group = c( "FILENAME1|FILENAME2|FILENAME3",
+  "FILENAME4|FILENAME5|FILENAME6" )}. These two groups are
+  then used for clustering the probes expression values.  }
+  \item{norm.method}{ The \code{norm.method} defines a
+  function to use for the normalization of raw expression
+  matrix. The user can implement his/her own function for
+  the normalization procedure. The function should take in
+  raw expression matrix and return the normalized
+  expression matrix where probe ID's are kept as rownames
+  and column names are CEL file names.  }
+  \item{clust.method}{ The user can write his/her own
+  function for clustering probes according to their
+  expression values. The custom function should take
+  \code{DEMIClust} object as the only parameter and output
+  a \code{list}. The output list should contain the name of
+  the clusters and the corresponding probe ID's. For
+  example \code{return( list( cluster1 = c(1:10), cluster2
+  = c(11:20), cluster3 = c(21:30) )}.  } \item{cluster}{
+  This parameter allows to calculate differential
+  expression on user defined clusters of probe ID's. It
+  needs to be a \code{list} of probe ID's where the
+  \code{list} names correspond to the cluster names. For
+  example \code{list( cluster1 = c(1:10), cluster2(1:10)
+  )}. When using this approach you need to make sure that
+  all the probe ID's given in the clusters are available in
+  the analysis. Otherwise an error message will be produced
+  and you need to remove those probes that have no
+  alignment in the analysis. When setting this parameter
+  the default behaviour will be overridden and no default
+  clustering will be applied.  } }
+}
+\examples{
+\dontrun{
+
+# To use the example we need to download a subset of CEL files from http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819 published by Pradervand et al. 2008.
+
+# Set the destination folder where the downloaded files fill be located. It can be any folder of your choosing.
+destfolder <- "demitest/testdata/"
+
+# Download packed CEL files and change the names according to the feature they represent (for example to include UHR or BRAIN in them to denote the features).
+# It is a good practice to name the files according to their features which allows easier identification of the files later.
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247694/suppl/GSM247694.CEL.gz", destfile = paste( destfolder, "UHR01_GSM247694.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247695/suppl/GSM247695.CEL.gz", destfile = paste( destfolder, "UHR02_GSM247695.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247698/suppl/GSM247698.CEL.gz", destfile = paste( destfolder, "UHR03_GSM247698.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247699/suppl/GSM247699.CEL.gz", destfile = paste( destfolder, "UHR04_GSM247699.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247696/suppl/GSM247696.CEL.gz", destfile = paste( destfolder, "BRAIN01_GSM247696.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247697/suppl/GSM247697.CEL.gz", destfile = paste( destfolder, "BRAIN02_GSM247697.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247700/suppl/GSM247700.CEL.gz", destfile = paste( destfolder, "BRAIN03_GSM247700.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247701/suppl/GSM247701.CEL.gz", destfile = paste( destfolder, "BRAIN04_GSM247701.CEL.gz", sep = "" ) )
+
+# We need the gunzip function (located in the R.utils package) to unpack the gz files.
+# Also we will remove the original unpacked files for we won't need them.
+library( R.utils )
+for( i in list.files( destfolder ) ) {
+	gunzip( paste( destfolder, i, sep = "" ), remove = TRUE )
+}
+
+# Now we can continue the example of the function demi
+
+# Do DEMI analysis with functional annotation analysis
+demires <- demi(analysis = 'gene', celpath = destfolder, group = c( "BRAIN", "UHR" ),
+			experiment = 'myexperiment', organism = 'homo_sapiens', clust.method = demi.wilcox.test.fast, pathway = TRUE)
+
+# Do DEMI analysis without functional annotation analysis
+demires <- demi(analysis = 'gene', celpath = destfolder, group = c( "BRAIN", "UHR" ),
+			experiment = 'myexperiment', organism = 'homo_sapiens', clust.method = demi.wilcox.test.fast, pathway = FALSE)
+
+# Retrieve results from the created object
+head( getResultTable( demires$experiment ) )
+
+}
+}
+\author{
+  Sten Ilmjarv
+}
+\seealso{
+  \code{DEMIExperiment}, \code{DEMIClust},
+  \code{DEMIPathway}, \code{DEMIDiff},
+  \code{demi.wilcox.test.fast}, \code{wilcox.test}
+}
+

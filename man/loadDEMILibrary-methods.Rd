@@ -1,0 +1,32 @@
+\docType{methods}
+\name{loadDEMILibrary}
+\alias{loadDEMILibrary}
+\alias{loadDEMILibrary,DEMIExperiment-method}
+\title{Loads the DEMI annotation package specified by the \code{DEMIExperiment} object}
+\arguments{
+  \item{object}{A \code{DEMIExperiment} object.}
+}
+\value{
+  Returns a \code{DEMIExperiment} object updated with
+  annotation and alignment information for the specified
+  microarray platform and species. If the \code{analysis}
+  parameter of the \code{DEMIExperiment} object is set to
+  'genome' it also attaches the cytoband information and if
+  the \code{analysis} parameter of the
+  \code{DEMIExperiment} object is set to 'gene' or
+  'transcript' it additionally loads the pathway
+  information.
+}
+\description{
+  The function \code{loadDEMILibrary} loads the DEMI
+  annotation packages specified by the \code{organism}
+  parameter in the \code{DEMIExperiment} object. It is used
+  internally in DEMI analysis.
+}
+\author{
+  Sten Ilmjarv
+}
+\seealso{
+  \code{DEMIExperiment}
+}
+

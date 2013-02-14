@@ -1,0 +1,102 @@
+\docType{methods}
+\name{demisummary}
+\alias{demisummary}
+\alias{demisummary,DEMIDiff-method}
+\alias{demisummary,DEMIExperiment-method}
+\title{Returns the mean normalized expression levels for the specified targets}
+\arguments{
+  \item{object}{A \code{DEMIExperiment}, \code{DEMIDiff}
+  object.}
+
+  \item{target}{A \code{vector}. Depending on the analysis
+  the \code{target} can be ensembl gene ID or gene symbol
+  (e.g. 'MAOB'), ensembl transcript ID, ensembl peptide ID
+  or genomic region ID.}
+}
+\value{
+  Returns the mean normalized expression levels of the
+  specified targets.
+}
+\description{
+  The function \code{demisummary} returns the mean
+  normalized expression levels for the specified targets.
+  It returns the mean expression values for the whole
+  dataset as well as for individual groups. Depending on
+  the \code{analysis} parameter of the underlying
+  \code{DEMIExperiment} object the \code{target} can be
+  ensembl gene ID or gene symbol (e.g. 'MAOB'), ensembl
+  transcript ID, ensembl peptide ID or genomic region ID.
+}
+\details{
+  To see available targets used in the analysis you can try
+  \code{head(getAnnotation(x))} where x is an object of
+  class \code{DEMIExperiment}. Alternatively you could use
+  \code{head(getAnnotation(getExperiment(y)))} where y is
+  of class \code{DEMIDiff}.
+
+  If no results have been attached to the
+  \code{DEMIExperiment} object then it only returns the
+  mean normalized expression values for the whole dataset
+  not for individual groups. To attach results to
+  \code{DEMIExperiment} object use the function
+  \code{attachResult(x,y)} where x is an object of class
+  \code{DEMIExperiment} and y is an object of class
+  \code{DEMIDiff} that stores the results.
+}
+\examples{
+\dontrun{
+
+# To use the example we need to download a subset of CEL files from http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819 published by Pradervand et al. 2008.
+
+# Set the destination folder where the downloaded files fill be located
+destfolder <- "demitest/testdata/"
+
+# Download packed CEL files and change the names according to the feature they represent (for example to include UHR or BRAIN in them to denote the features).
+# It is a good practice to name the files according to their features which allows easier identification of the files later.
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247694/suppl/GSM247694.CEL.gz", destfile = paste( destfolder, "UHR01_GSM247694.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247695/suppl/GSM247695.CEL.gz", destfile = paste( destfolder, "UHR02_GSM247695.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247698/suppl/GSM247698.CEL.gz", destfile = paste( destfolder, "UHR03_GSM247698.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247699/suppl/GSM247699.CEL.gz", destfile = paste( destfolder, "UHR04_GSM247699.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247696/suppl/GSM247696.CEL.gz", destfile = paste( destfolder, "BRAIN01_GSM247696.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247697/suppl/GSM247697.CEL.gz", destfile = paste( destfolder, "BRAIN02_GSM247697.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247700/suppl/GSM247700.CEL.gz", destfile = paste( destfolder, "BRAIN03_GSM247700.CEL.gz", sep = "" ) )
+download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247701/suppl/GSM247701.CEL.gz", destfile = paste( destfolder, "BRAIN04_GSM247701.CEL.gz", sep = "" ) )
+
+# We need the gunzip function (located in the R.utils package) to unpack the gz files.
+# Also we will remove the original unpacked files for we won't need them.
+library( R.utils )
+for( i in list.files( destfolder ) ) {
+	gunzip( paste( destfolder, i, sep = "" ), remove = TRUE )
+}
+
+# Now we can continue the example of the function demisummary
+
+# Set up an experiment
+demiexp <- DEMIExperiment( analysis = 'gene', celpath = destfolder,
+			experiment = 'myexperiment', organism = 'homo_sapiens' )
+
+# Create clusters with an optimized wilcoxon's rank sum test incorporated within demi that precalculates the probabilities
+demiclust <- DEMIClust( demiexp, group = c( "BRAIN", "UHR" ), clust.method = demi.wilcox.test.fast )
+
+# Calcuate differential expression
+demidiff <- DEMIDiff( demiclust )
+
+# Retrieve the mean normalized expression values for the specified targets
+demisummary( demiexp, c( "MAOB" ) )
+demisummary( demidiff, "MAOB" )
+
+# Attach results from 'DEMIDiff' object to 'DEMIExperiment' object
+demiexp_attached <- attachResult( demiexp, demidiff )
+
+# Retrieve mean normalized expression values again and note these are also retrieved for specific groups
+demisummary( demiexp_attached, "MAOB" )
+
+}
+}
+\author{
+  Sten Ilmjarv
+}
+\seealso{
+  \code{DEMIExperiment},\code{DEMIDiff},\code{attachResult}
+}
+

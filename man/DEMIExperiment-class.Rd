@@ -1,0 +1,105 @@
+\name{DEMIExperiment-class}
+\alias{DEMIExperiment-class}
+\title{Class \code{DEMIExperiment}}
+\arguments{
+  \item{analysis}{A \code{character}. Defines the analysis
+  type. It can be either 'transcript', 'gene', 'exon' or
+  'genome'. The default value is 'transcript'. For 'genome'
+  analysis \code{sectionsize} parameter needs to be defined
+  as well.}
+
+  \item{celpath}{A \code{character}. It can point to the
+  directory containing the CEL files or is a vector that
+  points directly to the CEL files.}
+
+  \item{experiment}{A \code{character}. A custom name of
+  the experiment defined by the user (e.g.
+  'myexperiment').}
+
+  \item{organism}{A character. The name of the species the
+  micrroarrays are measuring (e.g. 'homo_sapiens' or
+  'mus_musculus') given in lowercase and words separated by
+  underscore.}
+
+  \item{arraytype}{A \code{character}. Holds the platform
+  name of the microarrays used in the analysis.}
+
+  \item{maxtargets}{A \code{numeric}. The maximum number of
+  allowed targets (e.g. genes or transcripts) one probe can
+  have a match against. If to set it to 1 it means that the
+  probe can match only one gene. If the \code{analysis} is
+  set to 'transcript' the program still calculates the
+  number of matches on genes. Hence a probe matching two
+  transcripts on the same gene would be included but a
+  probe matching two transcripts on different genes would
+  not be included. The value needs to be a positive integer
+  or 0.}
+
+  \item{maxprobes}{A \code{character}. Sets the number of
+  unique probes a target is allowed to have a match
+  against.  All the targets that yield more alignments to
+  different probes then set by \code{maxprobes} will be
+  scaled down to the number defined by the \code{maxprobes}
+  parameter. It can be either a positive integer or set as
+  'median' or 'max' - 'median' meaning the median number of
+  probes matching to all targets and 'max' meaning the
+  maximum number of probes matching to a target.}
+
+  \item{pmsize}{A \code{numeric}. The minimum number of
+  consecutive nucleotides that need to match perfectly
+  against the target sequence. It can be either 23, 24 or
+  25. This means that alignments with smaller perfect match
+  size will not be included in the experiment.}
+
+  \item{sectionsize}{A \code{numeric}. This is only used if
+  the \code{analysis} parameter is set to 'genome'. It
+  defines the length of the genomic target region used in
+  the 'genome' analysis.}
+
+  \item{norm.method}{A \code{function}. Defines a function
+  used to normalize the raw expression values. The function
+  should take in raw expression matrix and return the
+  normalized expression matrix where probe ID's are kept as
+  rownames and column names are CEL file names.}
+
+  \item{filetag}{A \code{character}. This is a custom
+  string that can be used to identify the experiment. At
+  the current development stage this parameter is used only
+  when using the function \code{demi}, where the output
+  files will contain the specified filetag.}
+
+  \item{annoTable}{A \code{data.frame}. Holds the
+  annotation information used in the experiment.}
+
+  \item{blatTable}{A \code{data.frame}. Holds the alignment
+  information of probes and their corresponding targets.}
+
+  \item{cytoband}{A \code{data.frame}. Only used in the
+  'genome' analysis. Holds the karyotype information for
+  every chromosome of the species specified by the
+  \code{organism} parameter.}
+
+  \item{pathway}{A \code{data.frame}. Only used in the
+  'gene' and 'transcript' analysis. Holds the genes for
+  every gene ontology category.}
+
+  \item{exprsdata}{A \code{DEMICel} object. Holds the raw
+  and normalized expression matrices in a \code{DEMICel}
+  object.}
+
+  \item{results}{A \code{list}. Can be used to store all
+  the results as \code{DEMIDiff} objects done on the same
+  \code{DEMIExperiment} object.}
+}
+\description{
+  The class \code{DEMIExperiment} defines an experiment. It
+  holds the raw and normalized expression data as well as
+  annotation information for selected analysis (either
+  'gene', 'transcript', 'exon' or 'genome'). It can be used
+  to hold all the analysis results (\code{DEMIDiff}
+  objects) done on the same \code{DEMIExperiment} object.
+}
+\author{
+  Sten Ilmjarv
+}
+

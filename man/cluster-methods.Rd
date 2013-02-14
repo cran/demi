@@ -1,0 +1,26 @@
+\docType{methods}
+\name{cluster}
+\alias{cluster}
+\alias{cluster,DEMIClust-method}
+\title{Initializes the clustering of probes into clusters}
+\arguments{
+  \item{object}{A \code{DEMIClust} object.}
+}
+\value{
+  Returns a \code{DEMIClust} object that is updated with a
+  list of clustered probes.
+}
+\description{
+  The function \code{cluster} clusters probes with the
+  function specified in the in the \code{clust.method}
+  parameter of the \code{DEMIClust} object. This function
+  is used internally by DEMI analysis when clusters are
+  created automatically from normalized expression matrix.
+}
+\author{
+  Sten Ilmjarv
+}
+\seealso{
+  \code{DEMIClust}
+}
+

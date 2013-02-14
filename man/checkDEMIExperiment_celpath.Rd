@@ -1,0 +1,22 @@
+\name{checkDEMIExperiment_celpath}
+\alias{checkDEMIExperiment_celpath}
+\title{Checks if \code{celpath} is correct}
+\usage{
+  checkDEMIExperiment_celpath(celpath)
+}
+\arguments{
+  \item{celpath}{A \code{character}.}
+}
+\value{
+  Returns NULL if \code{celpath} is ok, else returns an
+  error message.
+}
+\description{
+  Checks if \code{celpath} is correct for DEMI analysis.
+  The \code{celpath} stores CEL directory or CEL files. It
+  is used internally in DEMI analysis.
+}
+\author{
+  Sten Ilmjarv
+}
+

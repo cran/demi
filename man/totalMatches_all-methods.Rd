@@ -1,0 +1,24 @@
+\docType{methods}
+\name{totalMatches_all}
+\alias{totalMatches_all}
+\title{Calculates the number of matches over all probes}
+\usage{
+  totalMatches_all(blatTable)
+}
+\arguments{
+  \item{blatTable}{A \code{data.frame}. A \code{data.frame}
+  with alignment information.}
+}
+\value{
+  A \code{data.frame} that represents the number of probes
+  for each target.
+}
+\description{
+  The function \code{totalMatches_all} calculates the
+  number of matches for all probes in DEMI analysis. It is
+  used internally in DEMI analysis.
+}
+\author{
+  Sten Ilmjarv
+}
+
