@@ -145,7 +145,8 @@ setMethod( "demisummary", signature( object = "DEMIDiff" ),
 				);
 				ALL <- data.frame( ALL, rownames( ALL ) );
 				colnames( ALL )[ grep( "rownames.ALL.", colnames( ALL ) ) ] = "targetID";
-				output <- merge( output, ALL, by = "targetID" );
+#				output <- merge( output, ALL, by = "targetID" );
+				output <- join( output, ALL, by = "targetID" );
 				return( output );
 			} else {
 				#stop( "0 specified targets were found in the experiment" );
@@ -232,6 +233,7 @@ setMethod( "diffexp", signature( object = "DEMIDiff" ),
 					#	Merge includes all targets because clustMatches can be 0 as well if the target has no matches
 					#	in the cluster - therefore everything will be included
 					targetMatches <- merge( totalMatches, clustMatches, by = "targetID" );
+#					targetMatches <- join( totalMatches, clustMatches, by = "targetID" ); # this gave an error for some reason
 					
 					# If maxprobes has been set, adjust targetMatches for maxprobes
 					if ( length( ( maxprobes ) ) != 0 && maxprobes != 0 ) {
@@ -252,6 +254,7 @@ setMethod( "diffexp", signature( object = "DEMIDiff" ),
 							# Calculate transcript probe matches
 							matchGene <- matchExonGene( cluster = cluster, blatTable = blatTable, annoTable = annoTable );
 							targetMatches <- data.frame( merge( targetMatches, matchGene, by = "targetID" ) );
+#							targetMatches <- data.frame( join( targetMatches, matchGene, by = "targetID" ) ); # this gave an error for some reason
 							targetMatches <- unique( targetMatches[ , c( "targetID", "countCluster", "countBlat", "geneClust", "geneTotal", "geneID" ) ] );
 							hypergeoPval <- apply( targetMatches, 1, calcHypergeoExon );
 						}
@@ -269,6 +272,7 @@ setMethod( "diffexp", signature( object = "DEMIDiff" ),
 						if ( analysis == "transcript" ) {
 							annoTable_temp <- annoTable[ , -c( grep( "start", colnames( annoTable ) ), grep( "length", colnames( annoTable ) ) ) ]; # remove these columns
 							resultsCluster <- merge( data.frame( targetMatches[, c( "targetID", "countCluster", "countBlat" )], probesInCluster, probesInBlat, hypergeoPval, FDR ), annoTable_temp, by = "targetID", all.x = TRUE );
+#							resultsCluster <- join( data.frame( targetMatches[, c( "targetID", "countCluster", "countBlat" )], probesInCluster, probesInBlat, hypergeoPval, FDR ), annoTable_temp, by = "targetID", type = "left" );
 							#colnames( resultsCluster )[ grep( "targetID", colnames( resultsCluster ) ) ] = "transcriptID";
 						} else if ( analysis == "gene" ) {
 							annoTable_temp <- annoTable[ , -c( grep( "start", colnames( annoTable ) ), grep( "length", colnames( annoTable ) ), grep( "chr", colnames( annoTable ) ) ) ]; # remove these columns
@@ -276,12 +280,15 @@ setMethod( "diffexp", signature( object = "DEMIDiff" ),
 							colnames( annoTableCluster )[ grep( "geneID", colnames( annoTableCluster ) ) ] <- "targetID";
 							annoTableCluster = unique( annoTableCluster );
 							resultsCluster <- merge( data.frame( targetMatches[, c( "targetID", "countCluster", "countBlat" )], probesInCluster, probesInBlat, hypergeoPval, FDR ), annoTableCluster, by = "targetID", all.x = TRUE );
+#							resultsCluster <- join( data.frame( targetMatches[, c( "targetID", "countCluster", "countBlat" )], probesInCluster, probesInBlat, hypergeoPval, FDR ), annoTableCluster, by = "targetID", type = "left" );
 							#colnames( resultsCluster )[ grep( "targetID", colnames( resultsCluster ) ) ] = "geneID";
 						} else if ( analysis == "exon" ) {
 							resultsCluster <- unique( merge( data.frame( targetMatches, hypergeoPval, FDR ), annoTable[ , c( "targetID", "geneSymbol", "description" ) ], by = "targetID", all.x = TRUE ) );
+#							resultsCluster <- unique( join( data.frame( targetMatches, hypergeoPval, FDR ), annoTable[ , c( "targetID", "geneSymbol", "description" ) ], by = "targetID", type = "left" ) );
 							#colnames( resultsCluster )[ grep( "targetID", colnames( resultsCluster ) ) ] = "exonID";
 						} else if ( analysis == "genome" ) {
 							resultsCluster <- merge( data.frame( targetMatches[, c( "targetID", "countCluster", "countBlat" )], probesInCluster, probesInBlat, hypergeoPval, FDR ), annoTable, by = "targetID", all.x = TRUE );
+#							resultsCluster <- join( data.frame( targetMatches[, c( "targetID", "countCluster", "countBlat" )], probesInCluster, probesInBlat, hypergeoPval, FDR ), annoTable, by = "targetID", type = "left" );
 							#colnames( resultsCluster )[ grep( "targetID", colnames( resultsCluster ) ) ] = "sectionID";
 							# add cytoband if it exists
 							cytoband <- getCytoband( experiment );
@@ -324,11 +331,11 @@ setMethod( "diffexp", signature( object = "DEMIDiff" ),
 				FDR <- NULL;
 				if ( analysis == "genome" || analysis == "transcript" ) {
 					#cat( "\t\tAdjusting p-values for multiple testing by the modified FDR procedure (Benjamini & Yekutieli, 2001)" );
-					cat( DEMIMessages$DEMIDiff$multipleCorrectionBH );
+					cat( DEMIMessages$DEMIDiff$multipleCorrectionBY );
 					FDR <- p.adjust( as.vector( resultsAll$P.value ), "BY", length( as.vector( resultsAll$P.value ) ) );
 				} else {
 					#cat( "\t\tAdjusting p-values for multiple testing by the FDR procedure (Benjamini & Hochberg, 1995)" );
-					cat( DEMIMessages$DEMIDiff$multipleCorrectionBY );
+					cat( DEMIMessages$DEMIDiff$multipleCorrectionBH );
 					FDR <- p.adjust( as.vector( resultsAll$P.value ), "BH", length( as.vector( resultsAll$P.value ) ) );
 				}
 				resultsAll$FDR <- FDR;

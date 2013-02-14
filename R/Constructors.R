@@ -90,21 +90,37 @@
 #' @examples 
 #' \dontrun{
 #' 
-#' # To use the example we need to download a subset of CEL files from http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819 published by Pradervand et al. 2008.
+#' # To use the example we need to download a subset of CEL files from
+#' # http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819 published
+#' # by Pradervand et al. 2008.
 #' 
-#' # Set the destination folder where the downloaded files fill be located. It can be any folder of your choosing.
+#' # Set the destination folder where the downloaded files fill be located.
+#' # It can be any folder of your choosing.
 #' destfolder <- "demitest/testdata/"
 #' 
-#' # Download packed CEL files and change the names according to the feature they represent (for example to include UHR or BRAIN in them to denote the features).
-#' # It is a good practice to name the files according to their features which allows easier identification of the files later.
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247694/suppl/GSM247694.CEL.gz", destfile = paste( destfolder, "UHR01_GSM247694.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247695/suppl/GSM247695.CEL.gz", destfile = paste( destfolder, "UHR02_GSM247695.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247698/suppl/GSM247698.CEL.gz", destfile = paste( destfolder, "UHR03_GSM247698.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247699/suppl/GSM247699.CEL.gz", destfile = paste( destfolder, "UHR04_GSM247699.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247696/suppl/GSM247696.CEL.gz", destfile = paste( destfolder, "BRAIN01_GSM247696.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247697/suppl/GSM247697.CEL.gz", destfile = paste( destfolder, "BRAIN02_GSM247697.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247700/suppl/GSM247700.CEL.gz", destfile = paste( destfolder, "BRAIN03_GSM247700.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247701/suppl/GSM247701.CEL.gz", destfile = paste( destfolder, "BRAIN04_GSM247701.CEL.gz", sep = "" ) )
+#' # Download packed CEL files and change the names according to the feature
+#' # they represent (for example to include UHR or BRAIN in them to denote the
+#' # features).
+#' # It is good practice to name the files according to their features which
+#' # allows easier identification of the files later.
+#' 
+#' ftpaddress <- "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn"
+#' download.file( paste( ftpaddress, "GSM247694/suppl/GSM247694.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR01_GSM247694.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247695/suppl/GSM247695.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR02_GSM247695.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247698/suppl/GSM247698.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR03_GSM247698.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247699/suppl/GSM247699.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR04_GSM247699.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247696/suppl/GSM247696.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN01_GSM247696.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247697/suppl/GSM247697.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN02_GSM247697.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247700/suppl/GSM247700.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN03_GSM247700.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247701/suppl/GSM247701.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN04_GSM247701.CEL.gz", sep = "" ) )
 #' 
 #' # We need the gunzip function (located in the R.utils package) to unpack the gz files.
 #' # Also we will remove the original unpacked files for we won't need them.
@@ -117,31 +133,32 @@
 #' 
 #' # Basic experiment set up.
 #' demiexp <- DEMIExperiment(analysis = 'gene', celpath = destfolder,
-#' 			experiment = 'myexperiment', organism = 'homo_sapiens')
+#' 		experiment = 'myexperiment', organism = 'homo_sapiens')
 #' 
 #' # Run basic experiment set up but this time do 'transcript' analysis.
 #' demiexp <- DEMIExperiment(analysis = 'transcript', celpath = destfolder,
-#' 			experiment = 'myexperiment', organism = 'homo_sapiens')
+#' 		experiment = 'myexperiment', organism = 'homo_sapiens')
 #' 
 #' # Run basic experiment set up but this time do 'transcript' analysis.
 #' demiexp <- DEMIExperiment(analysis = 'exon', celpath = destfolder,
-#' 			experiment = 'myexperiment', organism = 'homo_sapiens' )
+#' 		experiment = 'myexperiment', organism = 'homo_sapiens' )
 #' 
 #' # For genome analysis do not forget to specify the sectionsize parameter.
 #' demiexp <- DEMIExperiment(analysis = 'genome', celpath = destfolder,
-#' 			experiment = 'myexperiment', organism = 'homo_sapiens', sectionsize = 500000)
+#' 		experiment = 'myexperiment', organism = 'homo_sapiens', sectionsize = 500000)
 #' 
-#' # Specify experiment with specific pmsize; the standard length for Affymetrix microarray probes is 25 nucleotides.
+#' # Specify experiment with specific pmsize; the standard length for Affymetrix microarray
+#' # probes is 25 nucleotides.
 #' demiexp <- DEMIExperiment(analysis = 'gene', celpath = destfolder,
-#' 			experiment = 'myexperiment', organism = 'homo_sapiens', pmsize = 23)
+#' 		experiment = 'myexperiment', organism = 'homo_sapiens', pmsize = 23)
 #'
 #' # Specify experiment by setting maxtargets to 1.
 #' demiexp <- DEMIExperiment(analysis = 'gene', celpath = destfolder,
-#' 			experiment = 'myexperiment', organism = 'homo_sapiens', maxtargets = 1)
+#' 		experiment = 'myexperiment', organism = 'homo_sapiens', maxtargets = 1)
 #'  
 #' # Specify experiment by setting maxprobes to 'median'.
 #' demiexp <- DEMIExperiment(analysis = 'gene', celpath = destfolder,
-#' 			experiment = 'myexperiment', organism = 'homo_sapiens', maxprobes = 'median')
+#' 		experiment = 'myexperiment', organism = 'homo_sapiens', maxprobes = 'median')
 #' 
 #' # Retrieve the alignment information from the DEMIExperiment object.
 #' head( getAlignment( demiexp ) )
@@ -156,10 +173,12 @@
 #' head( getNormMatrix( demiexp ) )
 #' 
 #' #####################
-#' # If the user has done the analysis and wishes to add the results to the original DEMIExperiment object.
+#' # If the user has done the analysis and wishes to add the results to the original
+#' # DEMIExperiment object.
 #' #####################
 #' 
-#' # Create clusters with an optimized wilcoxon's rank sum test incorporated within demi that precalculates the probabilities.
+#' # Create clusters with an optimized wilcoxon's rank sum test incorporated within demi that
+#' # precalculates the probabilities.
 #' demiclust <- DEMIClust( demiexp, group = c( "BRAIN", "UHR" ), clust.method = demi.wilcox.test.fast )
 #' # Calcuate differential expression
 #' demidiff <- DEMIDiff( demiclust )
@@ -414,21 +433,37 @@ function( groupA		= character(),
 #' @examples 
 #' \dontrun{
 #' 
-#' # To use the example we need to download a subset of CEL files from http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819 published by Pradervand et al. 2008.
+#' # To use the example we need to download a subset of CEL files from
+#' # http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819 published
+#' # by Pradervand et al. 2008.
 #' 
-#' # Set the destination folder where the downloaded files fill be located. It can be any folder of your choosing.
+#' # Set the destination folder where the downloaded files fill be located.
+#' # It can be any folder of your choosing.
 #' destfolder <- "demitest/testdata/"
 #' 
-#' # Download packed CEL files and change the names according to the feature they represent (for example to include UHR or BRAIN in them to denote the features).
-#' # It is a good practice to name the files according to their features which allows easier identification of the files later.
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247694/suppl/GSM247694.CEL.gz", destfile = paste( destfolder, "UHR01_GSM247694.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247695/suppl/GSM247695.CEL.gz", destfile = paste( destfolder, "UHR02_GSM247695.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247698/suppl/GSM247698.CEL.gz", destfile = paste( destfolder, "UHR03_GSM247698.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247699/suppl/GSM247699.CEL.gz", destfile = paste( destfolder, "UHR04_GSM247699.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247696/suppl/GSM247696.CEL.gz", destfile = paste( destfolder, "BRAIN01_GSM247696.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247697/suppl/GSM247697.CEL.gz", destfile = paste( destfolder, "BRAIN02_GSM247697.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247700/suppl/GSM247700.CEL.gz", destfile = paste( destfolder, "BRAIN03_GSM247700.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247701/suppl/GSM247701.CEL.gz", destfile = paste( destfolder, "BRAIN04_GSM247701.CEL.gz", sep = "" ) )
+#' # Download packed CEL files and change the names according to the feature
+#' # they represent (for example to include UHR or BRAIN in them to denote the
+#' # features).
+#' # It is good practice to name the files according to their features which
+#' # allows easier identification of the files later.
+#' 
+#' ftpaddress <- "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn"
+#' download.file( paste( ftpaddress, "GSM247694/suppl/GSM247694.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR01_GSM247694.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247695/suppl/GSM247695.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR02_GSM247695.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247698/suppl/GSM247698.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR03_GSM247698.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247699/suppl/GSM247699.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR04_GSM247699.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247696/suppl/GSM247696.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN01_GSM247696.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247697/suppl/GSM247697.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN02_GSM247697.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247700/suppl/GSM247700.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN03_GSM247700.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247701/suppl/GSM247701.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN04_GSM247701.CEL.gz", sep = "" ) )
 #' 
 #' # We need the gunzip function (located in the R.utils package) to unpack the gz files.
 #' # Also we will remove the original unpacked files for we won't need them.
@@ -446,7 +481,8 @@ function( groupA		= character(),
 #' # Create clusters with default behaviour
 #' demiclust <- DEMIClust( demiexp, group = c( "BRAIN", "UHR" ) )
 #' 
-#' # Create clusters with an optimized wilcoxon's rank sum test incorporated within demi that precalculates the probabilities.
+#' # Create clusters with an optimized wilcoxon's rank sum test incorporated within demi that
+#' # precalculates the probabilities.
 #' # The user can specify his/her own function for clustering.
 #' demiclust <- DEMIClust( demiexp, group = c( "BRAIN", "UHR" ), clust.method = demi.wilcox.test.fast )
 #' 
@@ -595,21 +631,37 @@ function( experiment	= "DEMIExperiment",
 #' @examples 
 #' \dontrun{
 #' 
-#' # To use the example we need to download a subset of CEL files from http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819 published by Pradervand et al. 2008.
+#' # To use the example we need to download a subset of CEL files from
+#' # http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819 published
+#' # by Pradervand et al. 2008.
 #' 
-#' # Set the destination folder where the downloaded files fill be located. It can be any folder of your choosing.
+#' # Set the destination folder where the downloaded files fill be located.
+#' # It can be any folder of your choosing.
 #' destfolder <- "demitest/testdata/"
 #' 
-#' # Download packed CEL files and change the names according to the feature they represent (for example to include UHR or BRAIN in them to denote the features).
-#' # It is a good practice to name the files according to their features which allows easier identification of the files later.
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247694/suppl/GSM247694.CEL.gz", destfile = paste( destfolder, "UHR01_GSM247694.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247695/suppl/GSM247695.CEL.gz", destfile = paste( destfolder, "UHR02_GSM247695.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247698/suppl/GSM247698.CEL.gz", destfile = paste( destfolder, "UHR03_GSM247698.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247699/suppl/GSM247699.CEL.gz", destfile = paste( destfolder, "UHR04_GSM247699.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247696/suppl/GSM247696.CEL.gz", destfile = paste( destfolder, "BRAIN01_GSM247696.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247697/suppl/GSM247697.CEL.gz", destfile = paste( destfolder, "BRAIN02_GSM247697.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247700/suppl/GSM247700.CEL.gz", destfile = paste( destfolder, "BRAIN03_GSM247700.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247701/suppl/GSM247701.CEL.gz", destfile = paste( destfolder, "BRAIN04_GSM247701.CEL.gz", sep = "" ) )
+#' # Download packed CEL files and change the names according to the feature
+#' # they represent (for example to include UHR or BRAIN in them to denote the
+#' # features).
+#' # It is good practice to name the files according to their features which
+#' # allows easier identification of the files later.
+#' 
+#' ftpaddress <- "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn"
+#' download.file( paste( ftpaddress, "GSM247694/suppl/GSM247694.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR01_GSM247694.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247695/suppl/GSM247695.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR02_GSM247695.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247698/suppl/GSM247698.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR03_GSM247698.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247699/suppl/GSM247699.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR04_GSM247699.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247696/suppl/GSM247696.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN01_GSM247696.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247697/suppl/GSM247697.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN02_GSM247697.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247700/suppl/GSM247700.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN03_GSM247700.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247701/suppl/GSM247701.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN04_GSM247701.CEL.gz", sep = "" ) )
 #' 
 #' # We need the gunzip function (located in the R.utils package) to unpack the gz files.
 #' # Also we will remove the original unpacked files for we won't need them.
@@ -622,9 +674,10 @@ function( experiment	= "DEMIExperiment",
 #' 
 #' # Set up an experiment.
 #' demiexp <- DEMIExperiment(analysis = 'gene', celpath = destfolder,
-#' 			experiment = 'myexperiment', organism = 'homo_sapiens')
+#' 		experiment = 'myexperiment', organism = 'homo_sapiens')
 #' 
-#' # Create clusters with an optimized wilcoxon's rank sum test incorporated within demi that precalculates the probabilities.
+#' # Create clusters with an optimized wilcoxon's rank sum test incorporated within demi that
+#' # precalculates the probabilities.
 #' demiclust <- DEMIClust( demiexp, group = c( "BRAIN", "UHR" ), clust.method = demi.wilcox.test.fast )
 #' 
 #' # Calcuate differential expression
@@ -789,21 +842,37 @@ function( cluster = "DEMIClust" )
 #' @examples 
 #' \dontrun{
 #' 
-#' # To use the example we need to download a subset of CEL files from http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819 published by Pradervand et al. 2008.
+#' # To use the example we need to download a subset of CEL files from
+#' # http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE9819 published
+#' # by Pradervand et al. 2008.
 #' 
-#' # Set the destination folder where the downloaded files fill be located. It can be any folder of your choosing.
+#' # Set the destination folder where the downloaded files fill be located.
+#' # It can be any folder of your choosing.
 #' destfolder <- "demitest/testdata/"
 #' 
-#' # Download packed CEL files and change the names according to the feature they represent (for example to include UHR or BRAIN in them to denote the features).
-#' # It is a good practice to name the files according to their features which allows easier identification of the files later.
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247694/suppl/GSM247694.CEL.gz", destfile = paste( destfolder, "UHR01_GSM247694.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247695/suppl/GSM247695.CEL.gz", destfile = paste( destfolder, "UHR02_GSM247695.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247698/suppl/GSM247698.CEL.gz", destfile = paste( destfolder, "UHR03_GSM247698.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247699/suppl/GSM247699.CEL.gz", destfile = paste( destfolder, "UHR04_GSM247699.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247696/suppl/GSM247696.CEL.gz", destfile = paste( destfolder, "BRAIN01_GSM247696.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247697/suppl/GSM247697.CEL.gz", destfile = paste( destfolder, "BRAIN02_GSM247697.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247700/suppl/GSM247700.CEL.gz", destfile = paste( destfolder, "BRAIN03_GSM247700.CEL.gz", sep = "" ) )
-#' download.file( "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn/GSM247701/suppl/GSM247701.CEL.gz", destfile = paste( destfolder, "BRAIN04_GSM247701.CEL.gz", sep = "" ) )
+#' # Download packed CEL files and change the names according to the feature
+#' # they represent (for example to include UHR or BRAIN in them to denote the
+#' # features).
+#' # It is good practice to name the files according to their features which
+#' # allows easier identification of the files later.
+#' 
+#' ftpaddress <- "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM247nnn"
+#' download.file( paste( ftpaddress, "GSM247694/suppl/GSM247694.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR01_GSM247694.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247695/suppl/GSM247695.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR02_GSM247695.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247698/suppl/GSM247698.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR03_GSM247698.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247699/suppl/GSM247699.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "UHR04_GSM247699.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247696/suppl/GSM247696.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN01_GSM247696.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247697/suppl/GSM247697.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN02_GSM247697.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247700/suppl/GSM247700.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN03_GSM247700.CEL.gz", sep = "" ) )
+#' download.file( paste( ftpaddress, "GSM247701/suppl/GSM247701.CEL.gz", sep = "/" ),
+#' 		destfile = paste( destfolder, "BRAIN04_GSM247701.CEL.gz", sep = "" ) )
 #' 
 #' # We need the gunzip function (located in the R.utils package) to unpack the gz files.
 #' # Also we will remove the original unpacked files for we won't need them.
@@ -816,11 +885,13 @@ function( cluster = "DEMIClust" )
 #' 
 #' # Do DEMI analysis with functional annotation analysis
 #' demires <- demi(analysis = 'gene', celpath = destfolder, group = c( "BRAIN", "UHR" ),
-#' 			experiment = 'myexperiment', organism = 'homo_sapiens', clust.method = demi.wilcox.test.fast, pathway = TRUE)
+#' 		experiment = 'myexperiment', organism = 'homo_sapiens',
+#' 		clust.method = demi.wilcox.test.fast, pathway = TRUE)
 #'
 #' # Do DEMI analysis without functional annotation analysis
 #' demires <- demi(analysis = 'gene', celpath = destfolder, group = c( "BRAIN", "UHR" ),
-#' 			experiment = 'myexperiment', organism = 'homo_sapiens', clust.method = demi.wilcox.test.fast, pathway = FALSE)
+#' 		experiment = 'myexperiment', organism = 'homo_sapiens',
+#' 		clust.method = demi.wilcox.test.fast, pathway = FALSE)
 #' 
 #' # Retrieve results from the created object
 #' head( getResultTable( demires$experiment ) )

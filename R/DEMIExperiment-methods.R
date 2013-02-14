@@ -57,7 +57,6 @@
 "initialize.DEMIExperiment" <-
 function(.Object,...) 
 {
-	
 	.Object <- callNextMethod(.Object,...);
 	cat( DEMIMessages$demiStart() );
 	.Object <- loadCel(.Object);
@@ -289,13 +288,16 @@ setMethod( "getTargetProbes", signature( object = "DEMIExperiment", target = "ve
 				if ( getAnalysis( object ) == "gene" ) {
 					addAnno <- unique( annotable[ which( annotable$geneID %in% probes$targetID ), c( "geneID", "geneSymbol" ) ] );
 					colnames( addAnno )[ grep( "geneID", colnames( addAnno ) ) ] <- "targetID";
-					probes <- merge( probes, addAnno, by = "targetID" );
+#					probes <- merge( probes, addAnno, by = "targetID" );
+					probes <- join( probes, addAnno, by = "targetID" );
 				} else if ( getAnalysis( object ) == "exon" ) {
 					addAnno <- unique( annotable[ which( annotable$targetID %in% probes$targetID ), c( "targetID", "geneSymbol" ) ] );
-					probes <- merge( probes, addAnno, by = "targetID" );
+#					probes <- merge( probes, addAnno, by = "targetID" );
+					probes <- join( probes, addAnno, by = "targetID" );
 				} else if ( getAnalysis( object ) == "transcript" ) {
 					addAnno <- unique( annotable[ which( annotable$targetID %in% probes$targetID ), c( "targetID", "geneSymbol" ) ] );
-					probes <- merge( probes, addAnno, by = "targetID" );
+#					probes <- merge( probes, addAnno, by = "targetID" );
+					probes <- join( probes, addAnno, by = "targetID" );
 				}
 				probes <- unique( probes );
 				if ( length( probes ) == 0 ) {
@@ -392,19 +394,22 @@ setMethod( "loadCel", signature( object = "DEMIExperiment" ),
 					if ( isDirectory( object@celpath ) == TRUE ) {	#	if celpath is a directory
 						#cat( paste( "\tThe CEL files included are: ", paste( list.celfiles( object@celpath ), collapse = ", ", sep = "" ), "\n", sep = "" ) );
 						cat( DEMIMessages$DEMIExperiment$includedCELFiles( paste( list.celfiles( object@celpath ), collapse = ", ", sep = "" ) ) );
-						orgdata <- ReadAffy( celfile.path = object@celpath );
+#						orgdata <- ReadAffy( celfile.path = object@celpath );
+						orgdata <- read.celfiles( list.celfiles( object@celpath, full.names = TRUE ) )
 						object@arraytype <- whatcdf( paste( object@celpath, "/", dir( object@celpath )[1], sep = "" ) );
 						
 					} else {	#	if celpath is a list of files
 						#cat( paste( "\tThe CEL files included are: ", paste( object@celpath, collapse = ", ", sep = "" ), "\n", sep = "" ) );
 						cat( DEMIMessages$DEMIExperiment$includedCELFiles( paste( object@celpath, collapse = ", ", sep = "" ) ) );
-						orgdata <- ReadAffy( filenames = as.vector( object@celpath ) );
+#						orgdata <- ReadAffy( filenames = as.vector( object@celpath ) );
+						orgdata <- read.celfiles( filenames = object@celpath )
 						object@arraytype <- whatcdf( ( object@celpath )[1] );
 					}
 				} else {
 					#cat( paste( "\tThe CEL files included are: ", paste( object@celpath, collapse = ", ", sep = "" ), "\n", sep = "" ) );
 					cat( DEMIMessages$DEMIExperiment$includedCELFiles( paste( object@celpath, collapse = ", ", sep = "" ) ) );
-					orgdata <- ReadAffy( filenames = as.vector( object@celpath ) );
+#					orgdata <- ReadAffy( filenames = as.vector( object@celpath ) );
+					orgdata <- read.celfiles( filenames = object@celpath )
 					object@arraytype <- whatcdf( ( object@celpath )[1] );
 				}
 				options( warn = 1 ) # Turn warnings back on
@@ -430,7 +435,7 @@ setMethod( "loadDEMILibrary", signature( object = "DEMIExperiment" ),
 			#	check if the library has been loaded - if not load the library
 			if ( !( pkg %in% loadedNamespaces() ) ) {
 				#	check if library is installed
-				if ( length( .find.package( pkg, quiet = TRUE ) ) == 0 ) {	# install the library from the repository
+				if ( length( find.package( pkg, quiet = TRUE ) ) == 0 ) {	# install the library from the repository
 					#cat( paste( "Library - package", pkg, "not installed" ) );
 					cat( DEMIMessages$DEMIExperiment$libraryNotInstalled( pkg ) );
 					#	check if possible to install the package
@@ -622,7 +627,8 @@ setMethod( "loadBlat", signature( object = "DEMIExperiment", pkg = "environment"
 			
 			#	Make a proper blat table for gene analysis
 			if ( analysis == "gene" ) {
-				tempBlat <- merge( blatTable[, c( "probeID", "targetID", "start", "strand" )], getAnnotation( object )[, c( "geneID", "targetID" )], by = "targetID" );
+#				tempBlat <- merge( blatTable[, c( "probeID", "targetID", "start", "strand" )], getAnnotation( object )[, c( "geneID", "targetID" )], by = "targetID" );
+				tempBlat <- join( blatTable[, c( "probeID", "targetID", "start", "strand" )], getAnnotation( object )[, c( "geneID", "targetID" )], by = "targetID" );
 				tempBlat <- unique( tempBlat[, c( "probeID", "geneID", "start", "strand" )] );
 				colnames( tempBlat )[ grep( "geneID", colnames( tempBlat ) ) ] = "targetID";
 				blatTable <- tempBlat;
@@ -836,7 +842,8 @@ setMethod( "demisummary", signature( object = "DEMIExperiment" ),
 				);
 				ALL <- data.frame( ALL, rownames( ALL ) );
 				colnames( ALL )[ grep( "rownames.ALL.", colnames( ALL ) ) ] = "targetID";
-				output <- merge( output, ALL, by = "targetID" );
+#				output <- merge( output, ALL, by = "targetID" );
+				output <- join( output, ALL, by = "targetID" );
 				return( output );
 			} else {
 				#stop( "0 specified targets were found in the experiment" );
@@ -1066,17 +1073,17 @@ setMethod( "probe.levels", signature( object = "DEMIExperiment", target = "chara
 	{
 		if ( length( target ) == 1 ) {
 			if( isTRUE( check4target( object, target ) ) ) {
-				library( ggplot2 );
-				library( reshape );
+				#library( ggplot2 );
+				#library( reshape );
 				probes <- getTargetProbes( object, target )$probeID;
 				levels <- getProbeLevel( object, probes, FALSE );
 				rownames( levels ) <- probes
 				colnames( levels ) <- sub( ".CEL", "", colnames( levels ) );
 				
-				levels <- melt( levels );
+				levels <- reshape::melt( levels );
 				colnames( levels ) = c( "probeID", "Files", "value" );
 				
-				pic <- ggplot( data = levels, aes( Files, value ) ) + geom_boxplot( aes( fill = Files, colour = Files ) ) +
+				pic <- ggplot2::ggplot( data = levels, aes( Files, value ) ) + geom_boxplot( aes( fill = Files, colour = Files ) ) +
 						scale_x_discrete("Probe IDs") + facet_wrap(~ probeID ) + scale_y_continuous("Relative rank values") +
 						ggtitle( paste( paste( target, collapse = ",", sep = "" ), " gene probe levels" , sep="" ) ) +
 						theme( axis.text.x = element_text(, angle = 310, hjust = 0, colour = "grey50") );
@@ -1097,8 +1104,8 @@ setMethod( "probe.plot", signature( object = "DEMIExperiment", target = "charact
 	{
 		if ( length( target ) == 1 ) {
 			if( isTRUE( check4target( object, target ) ) ) {
-				library( ggplot2 );
-				library( reshape );
+				#library( ggplot2 );
+				#library( reshape );
 				probes <- getTargetProbes( object, target )$probeID;
 				levels <- getProbeLevel( object, probes, FALSE );
 				
@@ -1112,10 +1119,10 @@ setMethod( "probe.plot", signature( object = "DEMIExperiment", target = "charact
 				end <- max( anno[ , "start" ] + anno[ , "length" ] );
 				start <- min( anno[, "start" ] );
 				
-				levels <- melt( levels );
+				levels <- reshape::melt( levels );
 				colnames( levels ) = c( "probeID", "Files", "value" );
 				
-				pic <- ggplot( data = levels, aes( factor( probeID ), value ) )  + geom_point( aes( color = Files ), size = 4 ) +
+				pic <- ggplot2::ggplot( data = levels, aes( factor( probeID ), value ) )  + geom_point( aes( color = Files ), size = 4 ) +
 						scale_x_discrete("Probe IDs") + scale_y_continuous("Relative rank values") +
 						ggtitle( paste( paste( target, collapse = ",", sep = "" ), " gene probe plots" , sep="" ) ) +
 						theme( axis.text.x = element_text(, angle = 310, hjust = 0, colour = "grey50") );
