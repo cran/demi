@@ -1,4 +1,4 @@
-8eb428935693372f14c437a656a31b6d *DESCRIPTION
+c02834fed301ecac2169801639de6226 *DESCRIPTION
 00f0dd51c779fad9dd2be86820d69026 *NAMESPACE
 e49ade9dc26f9483c736d0785c8e8c21 *R/AllClasses.R
 0fd69122a3af4ea427c45afda34df79b *R/AllGenerics.R
@@ -19,7 +19,7 @@ fc59dbed6adec4ccd9f13eecb9e5bca9 *R/messages.R
 8d66ee4a6ffd20b49a082e5179a8ee75 *R/zzz.R
 18464cff87bc71c4ef4113d29c58157c *inst/doc/demi.R
 4f70ffaf15b30bdea39eb971c8130046 *inst/doc/demi.Rnw
-53502c2e2602bacc29883de390ebfec8 *inst/doc/demi.pdf
+8d8acd58616cedafc35e4f701440dd76 *inst/doc/demi.pdf
 1c4fdc4d59abfff50f1c54bac56412e6 *man/DEMICel-class.Rd
 522dcd63eab2333fcb7ecc54aa394fab *man/DEMICel-methods.Rd
 78749187893e032e300993e5a6e1a24b *man/DEMIClust-class.Rd
@@ -30,7 +30,7 @@ bd4ce19d7916782ee1a0cff050d60bdd *man/DEMIExperiment-class.Rd
 8d9e5731aa0c0fc9e938ded918ba1369 *man/DEMIExperiment-methods.Rd
 451d18d1920800d13ab704b64fa9972d *man/DEMIGroup-class.Rd
 1eede7217c6ee18a5f83135c8648d583 *man/DEMIGroup-methods.Rd
-e479dc5d7e5d3d184d35b25a8b4a0cec *man/DEMIMessages.Rd
+3fa5bdbf4936eb3b67374f96d4fdcdf7 *man/DEMIMessages.Rd
 f7ac65bdc2f2275f2d112e2a93049280 *man/DEMIPathway-methods.Rd
 2a58726de45b9ab23c5551840e8eebc5 *man/DEMIResult-class.Rd
 5e4fc3eb81993287537825dcdd05e7ff *man/DEMIWrap-methods.Rd
