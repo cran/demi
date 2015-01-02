@@ -54,6 +54,7 @@
 #' @param ... Additional arguments that may never be used.
 #' @return Returns a 'DEMIExperiment' object.
 #' @author Sten Ilmjarv
+#' @import methods
 "initialize.DEMIExperiment" <-
 function(.Object,...) 
 {
@@ -69,6 +70,8 @@ function(.Object,...)
 	.Object;
 	
 }#initialize.DEMIExperiment
+
+#' @import methods
 setMethod( "initialize", "DEMIExperiment", initialize.DEMIExperiment );
 
 
@@ -132,6 +135,8 @@ function( object )
 	if ( is.null( msg ) ) TRUE else paste( "\n", msg )
 	
 }#validDEMIExperiment
+
+#' @import methods
 setValidity( "DEMIExperiment", validDEMIExperiment )#setValidity
 
 
@@ -141,96 +146,112 @@ setValidity( "DEMIExperiment", validDEMIExperiment )#setValidity
 
 #' @rdname getAnalysis-methods
 #' @aliases getAnalysis,DEMIExperiment-method
+#' @import methods
 setMethod( "getAnalysis", signature( object = "DEMIExperiment" ),
 		function( object ) object@analysis
 )#getAnalysis
 
 #' @rdname getExperiment-methods
 #' @aliases getExperiment,DEMIExperiment-method
+#' @import methods
 setMethod( "getExperiment", signature( object = "DEMIExperiment" ),
 		function( object ) object@experiment
 )#getExperiment
 
 #' @rdname getCelpath-methods
 #' @aliases getCelpath,DEMIExperiment-method
+#' @import methods
 setMethod( "getCelpath", signature( object = "DEMIExperiment" ),
 		function( object ) object@celpath
 )#getCelpath
 
 #' @rdname getOrganism-methods
 #' @aliases getOrganism,DEMIExperiment-method
+#' @import methods
 setMethod( "getOrganism", signature( object = "DEMIExperiment" ),
 		function( object ) object@organism
 )#getOrganism
 
 #' @rdname getArraytype-methods
 #' @aliases getArraytype,DEMIExperiment-method
+#' @import methods
 setMethod( "getArraytype", signature( object = "DEMIExperiment" ),
 		function( object ) object@arraytype
 )#getArraytype
 
 #' @rdname getMaxtargets-methods
 #' @aliases getMaxtargets,DEMIExperiment-method
+#' @import methods
 setMethod( "getMaxtargets", signature( object = "DEMIExperiment" ),
 		function( object ) object@maxtargets
 )#getMaxtargets
 
 #' @rdname getMaxprobes-methods
 #' @aliases getMaxprobes,DEMIExperiment-method
+#' @import methods
 setMethod( "getMaxprobes", signature( object = "DEMIExperiment" ),
 		function( object ) object@maxprobes
 )#getMaxprobes
 
 #' @rdname getAnnotation-methods
 #' @aliases getAnnotation,DEMIExperiment-method
+#' @import methods
 setMethod( "getAnnotation", signature( object = "DEMIExperiment" ),
 		function( object ) object@annoTable
 )#getAnnotation
 
 #' @rdname getAlignment-methods
 #' @aliases getAlignment,DEMIExperiment-method
+#' @import methods
 setMethod( "getAlignment", signature( object = "DEMIExperiment" ),
 		function( object ) object@blatTable
 )#getAlignment
 
 #' @rdname getCytoband-methods
 #' @aliases getCytoband,DEMIExperiment-method
+#' @import methods
 setMethod( "getCytoband", signature( object = "DEMIExperiment" ),
 		function( object ) object@cytoband
 )#getCytoband
 
 #' @rdname getPathway-methods
 #' @aliases getPathway,DEMIExperiment-method
+#' @import methods
 setMethod( "getPathway", signature( object = "DEMIExperiment" ),
 		function( object ) object@pathway
 )#getPathway
 
 #' @rdname getCelMatrix-methods
 #' @aliases getCelMatrix,DEMIExperiment-method
+#' @import methods
 setMethod( "getCelMatrix", signature( object = "DEMIExperiment" ),
 		function( object ) object@exprsData@celMatrix
 )#getCelMatrix
 
 #' @rdname getNormMatrix-methods
 #' @aliases getNormMatrix,DEMIExperiment-method
+#' @import methods
 setMethod( "getNormMatrix", signature( object = "DEMIExperiment" ),
 		function( object ) object@exprsData@normMatrix
 )#getNormMatrix
 
 #' @rdname getResult-methods
 #' @aliases getResult,DEMIExperiment-method
+#' @import methods
 setMethod( "getResult", signature( object = "DEMIExperiment" ),
 		function( object ) object@results
 )#getResults
 
 #' @rdname getResultTable-methods
 #' @aliases getResultTable,DEMIExperiment-method
+#' @import methods
 setMethod( "getResultTable", signature( object = "DEMIExperiment" ),
 		function( object ) makeDEMIResultsTable( getResult( object ) )
 )#getResultTable
 
 #' @rdname getProbeLevel-methods
 #' @aliases getProbeLevel,DEMIExperiment,vector,logical-method
+#' @import methods
 setMethod( "getProbeLevel", signature( object = "DEMIExperiment", probes = "vector", verbose = "logical" ),
 		function( object, probes, verbose = TRUE ) {
 			norm.matrix <- getNormMatrix( object );
@@ -247,6 +268,7 @@ setMethod( "getProbeLevel", signature( object = "DEMIExperiment", probes = "vect
 
 #' @rdname getTargetProbes-methods
 #' @aliases getTargetProbes,DEMIExperiment,vector-method
+#' @import methods
 setMethod( "getTargetProbes", signature( object = "DEMIExperiment", target = "vector" ),
 		function( object, target ) {
 			if ( length( target ) == 1 && nchar( target ) == 0 ) {
@@ -289,15 +311,15 @@ setMethod( "getTargetProbes", signature( object = "DEMIExperiment", target = "ve
 					addAnno <- unique( annotable[ which( annotable$geneID %in% probes$targetID ), c( "geneID", "geneSymbol" ) ] );
 					colnames( addAnno )[ grep( "geneID", colnames( addAnno ) ) ] <- "targetID";
 #					probes <- merge( probes, addAnno, by = "targetID" );
-					probes <- join( probes, addAnno, by = "targetID" );
+					probes <- plyr::join( probes, addAnno, by = "targetID" );
 				} else if ( getAnalysis( object ) == "exon" ) {
 					addAnno <- unique( annotable[ which( annotable$targetID %in% probes$targetID ), c( "targetID", "geneSymbol" ) ] );
 #					probes <- merge( probes, addAnno, by = "targetID" );
-					probes <- join( probes, addAnno, by = "targetID" );
+					probes <- plyr::join( probes, addAnno, by = "targetID" );
 				} else if ( getAnalysis( object ) == "transcript" ) {
 					addAnno <- unique( annotable[ which( annotable$targetID %in% probes$targetID ), c( "targetID", "geneSymbol" ) ] );
 #					probes <- merge( probes, addAnno, by = "targetID" );
-					probes <- join( probes, addAnno, by = "targetID" );
+					probes <- plyr::join( probes, addAnno, by = "targetID" );
 				}
 				probes <- unique( probes );
 				if ( length( probes ) == 0 ) {
@@ -312,6 +334,7 @@ setMethod( "getTargetProbes", signature( object = "DEMIExperiment", target = "ve
 
 #' @rdname getTargetAnnotation-methods
 #' @aliases getTargetAnnotation,DEMIExperiment,vector-method
+#' @import methods
 setMethod( "getTargetAnnotation", signature( object = "DEMIExperiment", target = "vector" ),
 		function( object, target ) {
 			if ( length( target ) > 0 ) {
@@ -347,6 +370,7 @@ setMethod( "getTargetAnnotation", signature( object = "DEMIExperiment", target =
 
 #' @rdname attachResult-methods
 #' @aliases attachResult,DEMIExperiment,DEMIDiff-method
+#' @import methods
 setMethod( "attachResult", signature( object = "DEMIExperiment", diffObject = "DEMIDiff" ),
 		function( object, diffObject ) {
 			result.experiment <- getExperiment( diffObject );
@@ -381,6 +405,7 @@ setMethod( "attachResult", signature( object = "DEMIExperiment", diffObject = "D
 
 #' @rdname loadCel-methods
 #' @aliases loadCel,DEMIExperiment-method
+#' @import methods
 setMethod( "loadCel", signature( object = "DEMIExperiment" ),
 		function( object ) {
 			#	If 'celpath' has been defined then load the cel files
@@ -391,29 +416,29 @@ setMethod( "loadCel", signature( object = "DEMIExperiment" ),
 				orgdata <- NULL;
 				options( warn = -1 ) # Turn warnings off
 				if ( length( object@celpath ) == 1 ) {
-					if ( isDirectory( object@celpath ) == TRUE ) {	#	if celpath is a directory
-						#cat( paste( "\tThe CEL files included are: ", paste( list.celfiles( object@celpath ), collapse = ", ", sep = "" ), "\n", sep = "" ) );
-						cat( DEMIMessages$DEMIExperiment$includedCELFiles( paste( list.celfiles( object@celpath ), collapse = ", ", sep = "" ) ) );
+					if ( R.utils::isDirectory( object@celpath ) == TRUE ) {	#	if celpath is a directory
+						#cat( paste( "\tThe CEL files included are: ", paste( affy::list.celfiles( object@celpath ), collapse = ", ", sep = "" ), "\n", sep = "" ) );
+						cat( DEMIMessages$DEMIExperiment$includedCELFiles( paste( affy::list.celfiles( object@celpath ), collapse = ", ", sep = "" ) ) );
 #						orgdata <- ReadAffy( celfile.path = object@celpath );
-						orgdata <- read.celfiles( list.celfiles( object@celpath, full.names = TRUE ) )
-						object@arraytype <- whatcdf( paste( object@celpath, "/", dir( object@celpath )[1], sep = "" ) );
+						orgdata <- oligo::read.celfiles( affy::list.celfiles( object@celpath, full.names = TRUE ) )
+                        object@arraytype <- affy::whatcdf( paste( object@celpath, "/", dir( object@celpath )[1], sep = "" ) );
 						
 					} else {	#	if celpath is a list of files
 						#cat( paste( "\tThe CEL files included are: ", paste( object@celpath, collapse = ", ", sep = "" ), "\n", sep = "" ) );
 						cat( DEMIMessages$DEMIExperiment$includedCELFiles( paste( object@celpath, collapse = ", ", sep = "" ) ) );
 #						orgdata <- ReadAffy( filenames = as.vector( object@celpath ) );
-						orgdata <- read.celfiles( filenames = object@celpath )
-						object@arraytype <- whatcdf( ( object@celpath )[1] );
+						orgdata <- oligo::read.celfiles( filenames = object@celpath )
+						object@arraytype <- affy::whatcdf( ( object@celpath )[1] );
 					}
 				} else {
 					#cat( paste( "\tThe CEL files included are: ", paste( object@celpath, collapse = ", ", sep = "" ), "\n", sep = "" ) );
 					cat( DEMIMessages$DEMIExperiment$includedCELFiles( paste( object@celpath, collapse = ", ", sep = "" ) ) );
 #					orgdata <- ReadAffy( filenames = as.vector( object@celpath ) );
-					orgdata <- read.celfiles( filenames = object@celpath )
-					object@arraytype <- whatcdf( ( object@celpath )[1] );
+					orgdata <- oligo::read.celfiles( filenames = object@celpath )
+					object@arraytype <- affy::whatcdf( ( object@celpath )[1] );
 				}
 				options( warn = 1 ) # Turn warnings back on
-				orgdata <- exprs( orgdata );
+                orgdata <- affy::exprs( orgdata );
 				exprsData <- DEMICel( celMatrix = orgdata );
 				object@exprsData <- exprsData;
 				#cat( paste( "\tUsing microarray platform ", object@arraytype, "\n", sep = "" ) );
@@ -428,6 +453,7 @@ setMethod( "loadCel", signature( object = "DEMIExperiment" ),
 
 #' @rdname loadDEMILibrary-methods
 #' @aliases loadDEMILibrary,DEMIExperiment-method
+#' @import methods
 setMethod( "loadDEMILibrary", signature( object = "DEMIExperiment" ),
 		function( object ) {
 			pkg <- paste( "demi", cleanorganismname( getOrganism( object ) ), sep = "" );
@@ -446,16 +472,26 @@ setMethod( "loadDEMILibrary", signature( object = "DEMIExperiment" ),
 						demipkgs <- NULL;
 						ver <- paste( version$major, version$minor, sep = ".")
 						ver <- sub( "\\.\\d+$", "", rev(ver) )
-						demipkgs <- available.packages( contriburl = "http://biit.cs.ut.ee/demi/R/src/contrib/" );
-						if ( !( pkg %in% demipkgs[, "Package"] ) ) {
-							#	the package was not found
-							#stop( paste( "Package", pkg, "was not found in the http://biit.cs.ut.ee/demi/R/src/contrib/." ) )
-							stop( DEMIMessages$DEMIExperiment$packageNotFoundFromRepo( pkg ) );
-						} else {
-							#	install the package
-							cat( DEMIMessages$DEMIExperiment$installingPackage( pkg, "http://biit.cs.ut.ee/demi/R" ) );
-							install.packages( pkg, repos="http://biit.cs.ut.ee/demi/R", dependencies = FALSE )
-						}
+                        ########################
+                        # Now we will do an independent repository, not related to R versions using devtools with specified url
+                        # --- Below is old code from version 1.1.1 ---
+                        #demipkgs <- available.packages( contriburl = "http://biit.cs.ut.ee/demi/R/src/contrib/" );
+                        #if ( !( pkg %in% demipkgs[, "Package"] ) ) {
+                        #	#	the package was not found
+                        #	#stop( paste( "Package", pkg, "was not found in the http://biit.cs.ut.ee/demi/R/src/contrib/." ) )
+                        #	stop( DEMIMessages$DEMIExperiment$packageNotFoundFromRepo( pkg ) );
+                        #} else {
+                        #	#	install the package
+                        #	cat( DEMIMessages$DEMIExperiment$installingPackage( pkg, "http://biit.cs.ut.ee/demi/R" ) );
+                        #	install.packages( pkg, repos="http://biit.cs.ut.ee/demi/R", dependencies = FALSE )
+                        #}
+                        # --- Now will  come new code for version >= 1.1.2 ---
+                        ########################
+                        # first check if the specified url exist
+                        try_install <- try(devtools::install_url(paste("http://biit.cs.ut.ee/demi/R/datapackages/", pkg, "_0.1.tar.gz", sep="")), silent = T)
+                        if (class(try_install) == "try-error") {
+                            stop( DEMIMessages$DEMIExperiment$packageNotFoundFromRepo( pkg ) );
+                        }
 					} else {
 						#stop( paste( "The current operation could not access the internet. Please",
 						#			 "check your internet connection." ) )
@@ -495,6 +531,7 @@ setMethod( "loadDEMILibrary", signature( object = "DEMIExperiment" ),
 
 #' @rdname loadAnnotation-methods
 #' @aliases loadAnnotation,DEMIExperiment,environment-method
+#' @import methods
 setMethod( "loadAnnotation", signature( object = "DEMIExperiment", pkg = "environment" ),
 		function( object, pkg ) {
 			annoTable <- NULL;
@@ -543,12 +580,13 @@ setMethod( "loadAnnotation", signature( object = "DEMIExperiment", pkg = "enviro
 
 #' @rdname loadBlat-methods
 #' @aliases loadBlat,DEMIExperiment,environment-method
+#' @import methods
 setMethod( "loadBlat", signature( object = "DEMIExperiment", pkg = "environment" ),
 		function( object, pkg ) {
 			
 			analysis <- getAnalysis( object );
 			blatdata <- NULL;
-			blat <- cleancdfname( getArraytype( object ), addcdf = FALSE );
+            blat <- affy::cleancdfname( getArraytype( object ), addcdf = FALSE );
 			if ( blat %in% do.call( "data", list( package = getPackageName( pkg ), envir = pkg ) )$results[,3] ) {
 				#	check if the data is already loaded
 				
@@ -628,7 +666,7 @@ setMethod( "loadBlat", signature( object = "DEMIExperiment", pkg = "environment"
 			#	Make a proper blat table for gene analysis
 			if ( analysis == "gene" ) {
 #				tempBlat <- merge( blatTable[, c( "probeID", "targetID", "start", "strand" )], getAnnotation( object )[, c( "geneID", "targetID" )], by = "targetID" );
-				tempBlat <- join( blatTable[, c( "probeID", "targetID", "start", "strand" )], getAnnotation( object )[, c( "geneID", "targetID" )], by = "targetID" );
+				tempBlat <- plyr::join( blatTable[, c( "probeID", "targetID", "start", "strand" )], getAnnotation( object )[, c( "geneID", "targetID" )], by = "targetID" );
 				tempBlat <- unique( tempBlat[, c( "probeID", "geneID", "start", "strand" )] );
 				colnames( tempBlat )[ grep( "geneID", colnames( tempBlat ) ) ] = "targetID";
 				blatTable <- tempBlat;
@@ -643,6 +681,7 @@ setMethod( "loadBlat", signature( object = "DEMIExperiment", pkg = "environment"
 
 #' @rdname loadCytoband-methods
 #' @aliases loadCytoband,DEMIExperiment,environment-method
+#' @import methods
 setMethod( "loadCytoband", signature( object = "DEMIExperiment", pkg = "environment" ),
 		function( object, pkg ) {
 			
@@ -678,6 +717,7 @@ setMethod( "loadCytoband", signature( object = "DEMIExperiment", pkg = "environm
 
 #' @rdname loadPathway-methods
 #' @aliases loadPathway,DEMIExperiment,environment-method
+#' @import methods
 setMethod( "loadPathway", signature( object = "DEMIExperiment", pkg = "environment" ),
 		function( object, pkg ) {
 			
@@ -716,6 +756,7 @@ setMethod( "loadPathway", signature( object = "DEMIExperiment", pkg = "environme
 
 #' @rdname check4probe-methods
 #' @aliases check4probe,DEMIExperiment,vector-method
+#' @import methods
 setMethod( "check4probe", signature( object = "DEMIExperiment", probes = "vector" ),
 		function( object, probes ) {
 			msg <- NULL;
@@ -733,6 +774,7 @@ setMethod( "check4probe", signature( object = "DEMIExperiment", probes = "vector
 
 #' @rdname check4target-methods
 #' @aliases check4target,DEMIExperiment,vector-method
+#' @import methods
 setMethod( "check4target", signature( object = "DEMIExperiment", target = "vector" ),
 		function( object, target ) {
 			targetProbes <- getTargetProbes( object, target );
@@ -790,6 +832,7 @@ setMethod( "check4target", signature( object = "DEMIExperiment", target = "vecto
 
 #' @rdname demisummary-methods
 #' @aliases demisummary,DEMIExperiment-method
+#' @import methods
 setMethod( "demisummary", signature( object = "DEMIExperiment" ), 
 		function( object, target )
 		{
@@ -843,7 +886,7 @@ setMethod( "demisummary", signature( object = "DEMIExperiment" ),
 				ALL <- data.frame( ALL, rownames( ALL ) );
 				colnames( ALL )[ grep( "rownames.ALL.", colnames( ALL ) ) ] = "targetID";
 #				output <- merge( output, ALL, by = "targetID" );
-				output <- join( output, ALL, by = "targetID" );
+				output <- plyr::join( output, ALL, by = "targetID" );
 				return( output );
 			} else {
 				#stop( "0 specified targets were found in the experiment" );
@@ -913,7 +956,7 @@ checkDEMIExperiment_celpath <- function( celpath )
 	msg <- NULL;
 	if ( length( celpath ) > 0 ) {
 		if ( length( celpath ) == 1 ) {
-			if ( isDirectory( celpath ) == TRUE ) {
+            if ( R.utils::isDirectory( celpath ) == TRUE ) {
 				if ( file.exists( celpath ) == FALSE ) {
 					#msg <- paste( sQuote( "celpath" ), "does not exists\n" );
 					msg <- DEMIMessages$DEMIExperiment$notFolder( "celpath" );
@@ -925,18 +968,18 @@ checkDEMIExperiment_celpath <- function( celpath )
 					}
 				}
 			} else {
-				if ( isCelFile( celpath ) == FALSE ) {
+                if ( affxparser::isCelFile( celpath ) == FALSE ) {
 					#msg <- paste( "The ", celpath, " in ", sQuote( "celpath" ), " is not a CEL file!\n", sep = "" );
 					msg <- DEMIMessages$DEMIExperiment$notACELFile( celpath, "celpath" );
 				}
 			}
 		} else if ( length( celpath ) > 1 ) {
 			for ( i in 1:length( celpath ) ) {
-				# For some reason isCelFile produces a warning messaage similar to:
+				# For some reason affxparser::isCelFile produces a warning messaage similar to:
 				# 3: In readBin(con, what = integer(), size = 4, signed = FALSE,  ... :
   				# 'signed = FALSE' is only valid for integers of sizes 1 and 2
 				# 4: closing unused connection 28 (/home/ilmjarv/work/projects/mef/data/CAHun-Ext-02-Control-2-MoEx-1_0-st-v1-a1.CEL)
-				if ( isCelFile( celpath[i] ) == FALSE ) {
+				if ( affxparser::isCelFile( celpath[i] ) == FALSE ) {
 					#msg <- paste( "The ", celpath[i], " in ", sQuote( "celpath" ), " is not a CEL file!\n", sep = "" );
 					msg <- paste( msg, DEMIMessages$DEMIExperiment$notACELFile( celpath[i], "celpath" ), sep = "" );
 				}
@@ -1068,6 +1111,7 @@ checkDEMIExperiment_normalization <- function( normalization )
 
 #' @rdname probe.levels-methods
 #' @aliases probe.levels,DEMIExperiment,character-method
+#' @import methods
 setMethod( "probe.levels", signature( object = "DEMIExperiment", target = "character" ),
 	function( object, target )
 	{
@@ -1083,10 +1127,10 @@ setMethod( "probe.levels", signature( object = "DEMIExperiment", target = "chara
 				levels <- reshape::melt( levels );
 				colnames( levels ) = c( "probeID", "Files", "value" );
 				
-				pic <- ggplot2::ggplot( data = levels, aes( Files, value ) ) + geom_boxplot( aes( fill = Files, colour = Files ) ) +
-						scale_x_discrete("Probe IDs") + facet_wrap(~ probeID ) + scale_y_continuous("Relative rank values") +
-						ggtitle( paste( paste( target, collapse = ",", sep = "" ), " gene probe levels" , sep="" ) ) +
-						theme( axis.text.x = element_text(, angle = 310, hjust = 0, colour = "grey50") );
+                pic <- ggplot2::ggplot( data = levels, ggplot2::aes( Files, value ) ) + ggplot2::geom_boxplot( ggplot2::aes( fill = Files, colour = Files ) ) +
+						ggplot2::scale_x_discrete("Probe IDs") + ggplot2::facet_wrap(~ probeID ) + ggplot2::scale_y_continuous("Relative rank values") +
+						ggplot2::ggtitle( paste( paste( target, collapse = ",", sep = "" ), " gene probe levels" , sep="" ) ) +
+						ggplot2::theme( axis.text.x = ggplot2::element_text(, angle = 310, hjust = 0, colour = "grey50") );
 				
 				return( pic );
 			}
@@ -1099,6 +1143,7 @@ setMethod( "probe.levels", signature( object = "DEMIExperiment", target = "chara
 
 #' @rdname probe.plot-methods
 #' @aliases probe.plot,DEMIExperiment,character-method
+#' @import methods
 setMethod( "probe.plot", signature( object = "DEMIExperiment", target = "character" ),
 	function( object, target )
 	{
@@ -1122,10 +1167,10 @@ setMethod( "probe.plot", signature( object = "DEMIExperiment", target = "charact
 				levels <- reshape::melt( levels );
 				colnames( levels ) = c( "probeID", "Files", "value" );
 				
-				pic <- ggplot2::ggplot( data = levels, aes( factor( probeID ), value ) )  + geom_point( aes( color = Files ), size = 4 ) +
-						scale_x_discrete("Probe IDs") + scale_y_continuous("Relative rank values") +
-						ggtitle( paste( paste( target, collapse = ",", sep = "" ), " gene probe plots" , sep="" ) ) +
-						theme( axis.text.x = element_text(, angle = 310, hjust = 0, colour = "grey50") );
+				pic <- ggplot2::ggplot( data = levels, ggplot2::aes( factor( probeID ), value ) )  + ggplot2::geom_point( ggplot2::aes( color = Files ), size = 4 ) +
+						ggplot2::scale_x_discrete("Probe IDs") + ggplot2::scale_y_continuous("Relative rank values") +
+						ggplot2::ggtitle( paste( paste( target, collapse = ",", sep = "" ), " gene probe plots" , sep="" ) ) +
+                        ggplot2::theme( axis.text.x = ggplot2::element_text(, angle = 310, hjust = 0, colour = "grey50") );
 				
 				return( pic );
 			}

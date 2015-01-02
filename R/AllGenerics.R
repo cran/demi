@@ -1,10 +1,12 @@
 # generic methods
 
+
+
+utils::globalVariables(c("exome","transcriptome","genome","sectionsizes","pmsizes","maxtarget","cytoband","pathway","Files","value","probeID"))
+
 #
 #	DEMIGroup
 #
-
-utils::globalVariables(c("exome","transcriptome","genome","sectionsizes","pmsizes","maxtarget","cytoband","pathway","Files","value","probeID"))
 
 #------------------------------------------------------------------------------#
 # DEMIGroup get functions
@@ -84,6 +86,7 @@ utils::globalVariables(c("exome","transcriptome","genome","sectionsizes","pmsize
 #' @export
 #' @docType methods
 #' @rdname getIndexA-methods
+#' @import methods
 setGeneric("getIndexA",					function(object) standardGeneric("getIndexA"));
 
 #' Returns the \code{indexB} parameter
@@ -160,6 +163,7 @@ setGeneric("getIndexA",					function(object) standardGeneric("getIndexA"));
 #' @export
 #' @docType methods
 #' @rdname getIndexB-methods
+#' @import methods
 setGeneric("getIndexB",					function(object) standardGeneric("getIndexB"));
 
 #' Returns the \code{groupA} parameter
@@ -236,6 +240,7 @@ setGeneric("getIndexB",					function(object) standardGeneric("getIndexB"));
 #' @export
 #' @docType methods
 #' @rdname getGroupA-methods
+#' @import methods
 setGeneric("getGroupA",					function(object) standardGeneric("getGroupA"));
 
 #' Returns the \code{groupB} parameter
@@ -312,6 +317,7 @@ setGeneric("getGroupA",					function(object) standardGeneric("getGroupA"));
 #' @export
 #' @docType methods
 #' @rdname getGroupB-methods
+#' @import methods
 setGeneric("getGroupB",					function(object) standardGeneric("getGroupB"));
 
 #' Returns the \code{groupNames} parameter
@@ -388,6 +394,7 @@ setGeneric("getGroupB",					function(object) standardGeneric("getGroupB"));
 #' @export
 #' @docType methods
 #' @rdname getGroupNames-methods
+#' @import methods
 setGeneric("getGroupNames",				function(object) standardGeneric("getGroupNames"));
 
 
@@ -465,6 +472,7 @@ setGeneric("getGroupNames",				function(object) standardGeneric("getGroupNames")
 #' @export
 #' @docType methods
 #' @rdname getAnalysis-methods
+#' @import methods
 setGeneric("getAnalysis",				function(object) standardGeneric("getAnalysis"));
 
 #' Returns the \code{celpath} parameter
@@ -534,6 +542,7 @@ setGeneric("getAnalysis",				function(object) standardGeneric("getAnalysis"));
 #' @export
 #' @docType methods
 #' @rdname getCelpath-methods
+#' @import methods
 setGeneric("getCelpath",				function(object) standardGeneric("getCelpath"));
 
 #' Returns the \code{organism} parameter
@@ -602,6 +611,7 @@ setGeneric("getCelpath",				function(object) standardGeneric("getCelpath"));
 #' @export
 #' @docType methods
 #' @rdname getOrganism-methods
+#' @import methods
 setGeneric("getOrganism",				function(object) standardGeneric("getOrganism"));
 
 #' Returns the \code{arraytype} parameter
@@ -669,6 +679,7 @@ setGeneric("getOrganism",				function(object) standardGeneric("getOrganism"));
 #' @export
 #' @docType methods
 #' @rdname getArraytype-methods
+#' @import methods
 setGeneric("getArraytype",				function(object) standardGeneric("getArraytype"));
 
 #' Returns the \code{maxtargets} parameter
@@ -741,6 +752,7 @@ setGeneric("getArraytype",				function(object) standardGeneric("getArraytype"));
 #' @export
 #' @docType methods
 #' @rdname getMaxtargets-methods
+#' @import methods
 setGeneric("getMaxtargets",				function(object) standardGeneric("getMaxtargets"));
 
 #' Returns the \code{maxprobes} parameter
@@ -814,6 +826,7 @@ setGeneric("getMaxtargets",				function(object) standardGeneric("getMaxtargets")
 #' @export
 #' @docType methods
 #' @rdname getMaxprobes-methods
+#' @import methods
 setGeneric("getMaxprobes",				function(object) standardGeneric("getMaxprobes"));
 
 #' Returns the \code{annoTable} parameter representing annotation information
@@ -882,6 +895,7 @@ setGeneric("getMaxprobes",				function(object) standardGeneric("getMaxprobes"));
 #' @export
 #' @docType methods
 #' @rdname getAnnotation-methods
+#' @import methods
 setGeneric("getAnnotation",				function(object) standardGeneric("getAnnotation"));
 
 #' Returns the \code{blatTable} parameter representing alignment information
@@ -950,6 +964,7 @@ setGeneric("getAnnotation",				function(object) standardGeneric("getAnnotation")
 #' @export
 #' @docType methods
 #' @rdname getAlignment-methods
+#' @import methods
 setGeneric("getAlignment", 				function(object) standardGeneric("getAlignment"));
 
 #' Returns the \code{cytoband} parameter representing karyotype information
@@ -1024,6 +1039,7 @@ setGeneric("getAlignment", 				function(object) standardGeneric("getAlignment"))
 #' @export
 #' @docType methods
 #' @rdname getCytoband-methods
+#' @import methods
 setGeneric("getCytoband", 				function(object) standardGeneric("getCytoband"));
 
 #' Returns the \code{pathway} parameter representing functional annotation information
@@ -1097,6 +1113,7 @@ setGeneric("getCytoband", 				function(object) standardGeneric("getCytoband"));
 #' @export
 #' @docType methods
 #' @rdname getPathway-methods
+#' @import methods
 setGeneric("getPathway", 				function(object) standardGeneric("getPathway"));
 
 #' Returns the raw expression matrix
@@ -1165,6 +1182,7 @@ setGeneric("getPathway", 				function(object) standardGeneric("getPathway"));
 #' @export
 #' @docType methods
 #' @rdname getCelMatrix-methods
+#' @import methods
 setGeneric("getCelMatrix",				function(object) standardGeneric("getCelMatrix"));
 
 #' Returns the normalized expression matrix
@@ -1233,6 +1251,7 @@ setGeneric("getCelMatrix",				function(object) standardGeneric("getCelMatrix"));
 #' @export
 #' @docType methods
 #' @rdname getNormMatrix-methods
+#' @import methods
 setGeneric("getNormMatrix",				function(object) standardGeneric("getNormMatrix"));
 
 #' Returns annotation information for the specified targets
@@ -1310,6 +1329,7 @@ setGeneric("getNormMatrix",				function(object) standardGeneric("getNormMatrix")
 #' @export
 #' @docType methods
 #' @rdname getTargetAnnotation-methods
+#' @import methods
 setGeneric("getTargetAnnotation",		function(object, target) standardGeneric("getTargetAnnotation"));
 
 #------------------------------------------------------------------------------#
@@ -1403,6 +1423,7 @@ setGeneric("getTargetAnnotation",		function(object, target) standardGeneric("get
 #' @export
 #' @docType methods
 #' @rdname attachResult-methods
+#' @import methods
 setGeneric("attachResult",				function(object, diffObject) standardGeneric("attachResult"));
 
 #------------------------------------------------------------------------------#
@@ -1487,6 +1508,7 @@ setGeneric("attachResult",				function(object, diffObject) standardGeneric("atta
 #' @export
 #' @docType methods
 #' @rdname check4probe-methods
+#' @import methods
 setGeneric("check4probe",				function(object, probes) standardGeneric("check4probe"));
 
 #' Checks if the targets are available
@@ -1564,6 +1586,7 @@ setGeneric("check4probe",				function(object, probes) standardGeneric("check4pro
 #' @export
 #' @docType methods
 #' @rdname check4target-methods
+#' @import methods
 setGeneric("check4target",				function(object, target) standardGeneric("check4target"));
 
 #' Initializes the normalization of the raw expression matrix
@@ -1580,6 +1603,7 @@ setGeneric("check4target",				function(object, target) standardGeneric("check4ta
 #' @export
 #' @docType methods
 #' @rdname celMatrixNormalize-methods
+#' @import methods
 setGeneric("celMatrixNormalize",		function(object, fun) standardGeneric("celMatrixNormalize"));
 
 #' Draws a histogram of the normalized expression levels of the specified targets
@@ -1655,6 +1679,7 @@ setGeneric("celMatrixNormalize",		function(object, fun) standardGeneric("celMatr
 #' @export
 #' @docType methods
 #' @rdname probe.levels-methods
+#' @import methods
 setGeneric("probe.levels",				function(object, target) standardGeneric("probe.levels"));
 
 #' Draws a plot of the normalized expression levels of the specified targets
@@ -1730,6 +1755,7 @@ setGeneric("probe.levels",				function(object, target) standardGeneric("probe.le
 #' @export
 #' @docType methods
 #' @rdname probe.plot-methods
+#' @import methods
 setGeneric("probe.plot",				function(object, target) standardGeneric("probe.plot"));
 
 #------------------------------------------------------------------------------#
@@ -1754,6 +1780,7 @@ setGeneric("probe.plot",				function(object, target) standardGeneric("probe.plot
 #' @export
 #' @docType methods
 #' @rdname loadDEMILibrary-methods
+#' @import methods
 setGeneric("loadDEMILibrary",			function(object) standardGeneric("loadDEMILibrary"));
 
 #' Loads the annotation information specified by the \code{DEMIExperiment} object
@@ -1771,6 +1798,7 @@ setGeneric("loadDEMILibrary",			function(object) standardGeneric("loadDEMILibrar
 #' @export
 #' @docType methods
 #' @rdname loadAnnotation-methods
+#' @import methods
 setGeneric("loadAnnotation",			function(object, pkg) standardGeneric("loadAnnotation"));
 
 #' Loads the alignment information specified by the \code{DEMIExperiment} object
@@ -1788,6 +1816,7 @@ setGeneric("loadAnnotation",			function(object, pkg) standardGeneric("loadAnnota
 #' @export
 #' @docType methods
 #' @rdname loadBlat-methods
+#' @import methods
 setGeneric("loadBlat",					function(object, pkg) standardGeneric("loadBlat"));
 
 #' Loads the karyotype information specified by the \code{DEMIExperiment} object
@@ -1805,6 +1834,7 @@ setGeneric("loadBlat",					function(object, pkg) standardGeneric("loadBlat"));
 #' @export
 #' @docType methods
 #' @rdname loadCytoband-methods
+#' @import methods
 setGeneric("loadCytoband",				function(object, pkg) standardGeneric("loadCytoband"));
 
 #' Loads the pathway information specified by the \code{DEMIExperiment} object
@@ -1822,6 +1852,7 @@ setGeneric("loadCytoband",				function(object, pkg) standardGeneric("loadCytoban
 #' @export
 #' @docType methods
 #' @rdname loadPathway-methods
+#' @import methods
 setGeneric("loadPathway",				function(object, pkg) standardGeneric("loadPathway"));
 
 #' Loads the raw expression matrix into a \code{DEMIExperiment} object
@@ -1839,6 +1870,7 @@ setGeneric("loadPathway",				function(object, pkg) standardGeneric("loadPathway"
 #' @export
 #' @docType methods
 #' @rdname loadCel-methods
+#' @import methods
 setGeneric("loadCel",					function(object) standardGeneric("loadCel"));
 
 #------------------------------------------------------------------------------#
@@ -1868,6 +1900,7 @@ setGeneric("loadCel",					function(object) standardGeneric("loadCel"));
 #' @export
 #' @docType methods
 #' @rdname norm.rrank-methods
+#' @import methods
 setGeneric("norm.rrank",				function(object) standardGeneric("norm.rrank"));
 
 #' Quantile normalization function
@@ -1892,6 +1925,7 @@ setGeneric("norm.rrank",				function(object) standardGeneric("norm.rrank"));
 #' 
 #' @docType methods
 #' @rdname norm.quantile-methods
+#' @import methods
 setGeneric("norm.quantile",				function(object) standardGeneric("norm.quantile"));
 
 
@@ -1919,6 +1953,7 @@ setGeneric("norm.quantile",				function(object) standardGeneric("norm.quantile")
 #' @export
 #' @docType methods
 #' @rdname createGroup-methods
+#' @import methods
 setGeneric("createGroup",				function(object) standardGeneric("createGroup"));
 
 #------------------------------------------------------------------------------#
@@ -1995,6 +2030,7 @@ setGeneric("createGroup",				function(object) standardGeneric("createGroup"));
 #' @export
 #' @docType methods
 #' @rdname getClustMethod-methods
+#' @import methods
 setGeneric("getClustMethod",			function(object) standardGeneric("getClustMethod"));
 
 #' Returns the \code{cutoff.pvalue} parameter
@@ -2068,6 +2104,7 @@ setGeneric("getClustMethod",			function(object) standardGeneric("getClustMethod"
 #' @export
 #' @docType methods
 #' @rdname getCutoffPvalue-methods
+#' @import methods
 setGeneric("getCutoffPvalue",			function(object) standardGeneric("getCutoffPvalue"));
 
 #' Returns the \code{cluster} parameter
@@ -2140,6 +2177,7 @@ setGeneric("getCutoffPvalue",			function(object) standardGeneric("getCutoffPvalu
 #' @export
 #' @docType methods
 #' @rdname getCluster-methods
+#' @import methods
 setGeneric("getCluster",				function(object) standardGeneric("getCluster"));
 
 #------------------------------------------------------------------------------#
@@ -2163,6 +2201,7 @@ setGeneric("getCluster",				function(object) standardGeneric("getCluster"));
 #' @export
 #' @docType methods
 #' @rdname cluster-methods
+#' @import methods
 setGeneric("cluster",					function(object) standardGeneric("cluster"));
 
 #------------------------------------------------------------------------------#
@@ -2247,6 +2286,7 @@ setGeneric("cluster",					function(object) standardGeneric("cluster"));
 #' @export
 #' @docType methods
 #' @rdname customObject-methods
+#' @import methods
 setGeneric("customObject",				function(object) standardGeneric("customObject"));
 
 
@@ -2331,6 +2371,7 @@ setGeneric("customObject",				function(object) standardGeneric("customObject"));
 #' @export
 #' @docType methods
 #' @rdname getDEMIClust-methods
+#' @import methods
 setGeneric("getDEMIClust",				function(object) standardGeneric("getDEMIClust"));
 
 #' Returns the \code{name} parameter
@@ -2408,6 +2449,7 @@ setGeneric("getDEMIClust",				function(object) standardGeneric("getDEMIClust"));
 #' @export
 #' @docType methods
 #' @rdname getName-methods
+#' @import methods
 setGeneric("getName",					function(object) standardGeneric("getName"));
 
 
@@ -2430,6 +2472,7 @@ setGeneric("getName",					function(object) standardGeneric("getName"));
 #' @export
 #' @docType methods
 #' @rdname diffexp-methods
+#' @import methods
 setGeneric("diffexp",					function(object) standardGeneric("diffexp"));
 
 
@@ -2514,6 +2557,7 @@ setGeneric("diffexp",					function(object) standardGeneric("diffexp"));
 #' @export
 #' @docType methods
 #' @rdname getGroup-methods
+#' @import methods
 setGeneric("getGroup",	 				function(object) standardGeneric("getGroup"));
 
 #' Returns the \code{experiment} parameter
@@ -2596,6 +2640,7 @@ setGeneric("getGroup",	 				function(object) standardGeneric("getGroup"));
 #' @export
 #' @docType methods
 #' @rdname getExperiment-methods
+#' @import methods
 setGeneric("getExperiment",				function(object) standardGeneric("getExperiment"));
 
 #' Returns the \code{result} parameter
@@ -2683,6 +2728,7 @@ setGeneric("getExperiment",				function(object) standardGeneric("getExperiment")
 #' @export
 #' @docType methods
 #' @rdname getResult-methods
+#' @import methods
 setGeneric("getResult",					function(object) standardGeneric("getResult"));
 
 #' Retruns the DEMI analysis results as a \code{data.frame}
@@ -2763,6 +2809,7 @@ setGeneric("getResult",					function(object) standardGeneric("getResult"));
 #' @export
 #' @docType methods
 #' @rdname getResultTable-methods
+#' @import methods
 setGeneric("getResultTable",			function(object) standardGeneric("getResultTable"));
 
 #' Returns the probe levels from the normalized expression matrix for the specified probes
@@ -2846,6 +2893,7 @@ setGeneric("getResultTable",			function(object) standardGeneric("getResultTable"
 #' @export
 #' @docType methods
 #' @rdname getProbeLevel-methods
+#' @import methods
 setGeneric("getProbeLevel",				function(object, probes, verbose) standardGeneric("getProbeLevel"));
 
 #' Returns the probe ID's of the specified targets
@@ -2932,6 +2980,7 @@ setGeneric("getProbeLevel",				function(object, probes, verbose) standardGeneric
 #' @export
 #' @docType methods
 #' @rdname getTargetProbes-methods
+#' @import methods
 setGeneric("getTargetProbes",			function(object, target) standardGeneric("getTargetProbes"));
 
 #' Returns the mean normalized expression levels for the specified targets
@@ -3030,4 +3079,5 @@ setGeneric("getTargetProbes",			function(object, target) standardGeneric("getTar
 #' @export
 #' @docType methods
 #' @rdname demisummary-methods
+#' @import methods
 setGeneric("demisummary",				function(object, target) standardGeneric("demisummary"));

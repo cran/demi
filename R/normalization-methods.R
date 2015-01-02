@@ -9,6 +9,7 @@
 
 #' @rdname celMatrixNormalize-methods
 #' @aliases celMatrixNormalize,DEMIExperiment,function-method
+#' @import methods
 setMethod( "celMatrixNormalize", signature( object = "DEMIExperiment", fun = "function" ),
 		function( object, fun ) {
 			#cat( "*Normalizing expression values" );
@@ -29,6 +30,7 @@ setMethod( "celMatrixNormalize", signature( object = "DEMIExperiment", fun = "fu
 
 #' @rdname norm.rrank-methods
 #' @aliases norm.rrank,matrix-method
+#' @import methods
 setMethod ( "norm.rrank", signature( object = "matrix" ),
 		function( object ) {
 			#cat( " - using 'relative rank' as the normalization method\n" );
@@ -40,6 +42,7 @@ setMethod ( "norm.rrank", signature( object = "matrix" ),
 
 #' @rdname norm.rrank-methods
 #' @aliases norm.rrank,numeric-method
+#' @import methods
 setMethod ( "norm.rrank", signature( object = "numeric" ),
 		function( object ) {
 			#cat( " - using 'relative rank' as the normalization method\n" );
@@ -51,6 +54,7 @@ setMethod ( "norm.rrank", signature( object = "numeric" ),
 
 #' @rdname norm.quantile-methods
 #' @aliases norm.quantile,matrix-method
+#' @import methods
 setMethod( "norm.quantile", signature( object = "matrix" ),
 		function( object ) {
 			#cat( "- using 'quantile normalization' as the normalization method\n" );

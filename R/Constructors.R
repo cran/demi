@@ -194,6 +194,7 @@
 #' @export
 #' @docType methods
 #' @rdname DEMIExperiment-methods
+#' @import methods
 "DEMIExperiment" <-
 function( analysis 				= "transcript",
 		  celpath				= character(),
@@ -311,6 +312,7 @@ function( analysis 				= "transcript",
 #' @export
 #' @docType methods
 #' @rdname DEMICel-methods
+#' @import methods
 "DEMICel" <-
 function( celMatrix		= matrix(),
 		  normMatrix	= matrix())
@@ -352,6 +354,7 @@ function( celMatrix		= matrix(),
 #' @export 
 #' @docType methods
 #' @rdname DEMIGroup-methods
+#' @import methods
 "DEMIGroup" <-
 function( groupA		= character(),
 		  groupB		= character(),
@@ -500,6 +503,7 @@ function( groupA		= character(),
 #' @export 
 #' @docType methods
 #' @rdname DEMIClust-methods
+#' @import methods
 "DEMIClust" <-
 function( experiment	= "DEMIExperiment",
 		  group			= character(),
@@ -697,6 +701,7 @@ function( experiment	= "DEMIExperiment",
 #' @export 
 #' @docType methods
 #' @rdname DEMIDiff-methods
+#' @import methods
 "DEMIDiff" <-
 function( cluster = "DEMIClust" )
 {
@@ -901,6 +906,7 @@ function( cluster = "DEMIClust" )
 #' @export 
 #' @docType methods
 #' @rdname DEMIWrap-methods
+#' @import methods
 "demi" <-
 function( analysis 				= "transcript",
 		  celpath				= character(),

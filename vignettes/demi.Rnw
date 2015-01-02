@@ -8,7 +8,11 @@
 \begin{document}
 
 %\VignetteIndexEntry{Using demi}
-%\VignetteKeyword{demi,DEMIExperiment,DEMIClust,DEMIDiff,DEMIPathway}
+%\VignetteKeyword{demi}
+%\VignetteKeyword{DEMIExperiment}
+%\VignetteKeyword{DEMIClust}
+%\VignetteKeyword{DEMIDiff}
+%\VignetteKeyword{DEMIPathway}
 
 \title{demi Package Vignette}
 \author{Sten Ilmj\"{a}rv \texttt{sten.ilmjarv@gmail.com}\\

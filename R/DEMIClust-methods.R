@@ -25,6 +25,7 @@
 #' @param ... Additional arguments that may never be used.
 #' @return Returns a \code{DEMIClust} object.
 #' @author Sten Ilmjarv
+#' @import methods
 "initialize.DEMIClust" <-
 function( .Object, ... ) 
 {
@@ -37,6 +38,7 @@ function( .Object, ... )
 	.Object;
 }#initialize.DEMIClust
 
+#' @import methods
 setMethod( "initialize", "DEMIClust", initialize.DEMIClust );
 
 
@@ -70,6 +72,8 @@ function( object )
 	# do the verdict
 	if ( is.null( msg ) ) TRUE else paste( "\n", msg )
 }#validDEMIExperiment
+
+#' @import methods
 setValidity( "DEMIClust", validDEMIClust )#setValidity
 
 
@@ -79,6 +83,7 @@ setValidity( "DEMIClust", validDEMIClust )#setValidity
 
 #' @rdname getGroup-methods
 #' @aliases getGroup,DEMIClust-method
+#' @import methods
 setMethod( "getGroup", signature( object = "DEMIClust" ),
 		function( object ) object@group
 )#getGroup
@@ -86,24 +91,28 @@ setMethod( "getGroup", signature( object = "DEMIClust" ),
 
 #' @rdname getExperiment-methods
 #' @aliases getExperiment,DEMIClust-method
+#' @import methods
 setMethod( "getExperiment", signature( object = "DEMIClust" ),
 		function( object ) object@experiment
 )#getExperiment
 
 #' @rdname getClustMethod-methods
 #' @aliases getClustMethod,DEMIClust-method
+#' @import methods
 setMethod( "getClustMethod", signature( object = "DEMIClust" ),
 		function( object ) object@clust.method
 )#getClustMethod
 
 #' @rdname getCutoffPvalue-methods
 #' @aliases getCutoffPvalue,DEMIClust-method
+#' @import methods
 setMethod( "getCutoffPvalue", signature( object = "DEMIClust" ),
 		function( object ) object@cutoff.pvalue
 )#getCutoffPvalue
 
 #' @rdname getCluster-methods
 #' @aliases getCluster,DEMIClust-method
+#' @import methods
 setMethod( "getCluster", signature( object = "DEMIClust" ),
 		function( object ) object@cluster
 )#getClusters
@@ -115,6 +124,7 @@ setMethod( "getCluster", signature( object = "DEMIClust" ),
 
 #' @rdname customObject-methods
 #' @aliases customObject,DEMIClust-method
+#' @import methods
 setMethod( "customObject", signature( object = "DEMIClust" ),
 		function( object ) {
 			#	the groupA and groupB are only set if the 'DEMIClust' object
@@ -129,6 +139,7 @@ setMethod( "customObject", signature( object = "DEMIClust" ),
 
 #' @rdname createGroup-methods
 #' @aliases createGroup,DEMIClust-method
+#' @import methods
 setMethod( "createGroup", signature( object = "DEMIClust" ),
 		function( object ) {
 			indexA <- grep( as.character( getGroup( object )@groupA ), colnames( getNormMatrix( object@experiment ) ) );
@@ -152,6 +163,7 @@ setMethod( "createGroup", signature( object = "DEMIClust" ),
 
 #' @rdname cluster-methods
 #' @aliases cluster,DEMIClust-method
+#' @import methods
 setMethod( "cluster", signature( object = "DEMIClust" ),
 		function( object ) {
 			# check for more then two samples for both groups

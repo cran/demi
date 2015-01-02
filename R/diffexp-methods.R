@@ -86,7 +86,7 @@ matchExonGene <- function( cluster, blatTable, annoTable ) {
 	
 	# Calculate matches for transcript
 #	geneTable <- merge( blatTable, annoTable[ , c( "geneID", "targetID" ) ], by = "targetID" );
-	geneTable <- join( blatTable, annoTable[ , c( "geneID", "targetID" ) ], by = "targetID" );
+	geneTable <- plyr::join( blatTable, annoTable[ , c( "geneID", "targetID" ) ], by = "targetID" );
 	geneTable <- geneTable[ , c( "probeID", "geneID" ) ];
 	geneTable <- unique( geneTable );
 	geneTable$geneID <- factor( geneTable$geneID );
@@ -103,11 +103,11 @@ matchExonGene <- function( cluster, blatTable, annoTable ) {
 	
 	# Merge two datasets together
 #	matchGene <- merge( matchGene, freqTable, by = "geneID" );
-	matchGene <- join( matchGene, freqTable, by = "geneID" );
+	matchGene <- plyr::join( matchGene, freqTable, by = "geneID" );
 	
 	# Add exon back to the dataset
 #	matchGene <- merge( matchGene, annoTable[ , c( "geneID", "targetID" ) ], by = "geneID" );
-	matchGene <- join( matchGene, annoTable[ , c( "geneID", "targetID" ) ], by = "geneID" );
+	matchGene <- plyr::join( matchGene, annoTable[ , c( "geneID", "targetID" ) ], by = "geneID" );
 	
 	# The function returns the dataset
 	return( matchGene );

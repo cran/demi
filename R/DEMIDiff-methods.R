@@ -26,6 +26,7 @@
 #' @param ... Additional arguments that may never be used.
 #' @return Returns a 'DEMDiff' object.
 #' @author Sten Ilmjarv
+#' @import methods
 "initialize.DEMIDiff" <-
 		function( .Object, ... ) 
 {
@@ -33,6 +34,8 @@
 	.Object <- diffexp(.Object);
 	.Object;
 }#initialize.DEMIClust
+
+#' @import methods
 setMethod( "initialize", "DEMIDiff", initialize.DEMIDiff );
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -41,12 +44,14 @@ setMethod( "initialize", "DEMIDiff", initialize.DEMIDiff );
 
 #' @rdname getDEMIClust-methods
 #' @aliases getDEMIClust,DEMIDiff-method
+#' @import methods
 setMethod( "getDEMIClust", signature( object = "DEMIDiff" ),
 		function( object ) object@cluster
 )#getDEMIClust
 
 #' @rdname getExperiment-methods
 #' @aliases getExperiment,DEMIDiff-method
+#' @import methods
 setMethod( "getExperiment", signature( object = "DEMIDiff" ),
 		function( object) {
 			getExperiment( object@cluster )
@@ -55,36 +60,42 @@ setMethod( "getExperiment", signature( object = "DEMIDiff" ),
 
 #' @rdname getGroup-methods
 #' @aliases getGroup,DEMIDiff-method
+#' @import methods
 setMethod( "getGroup", signature( object = "DEMIDiff" ),
 		function( object ) object@cluster@group
 )#getGroup
 
 #' @rdname getName-methods
 #' @aliases getName,DEMIDiff-method
+#' @import methods
 setMethod( "getName", signature( object = "DEMIDiff" ),
 		function( object ) object@name
 )#getName
 
 #' @rdname getResult-methods
 #' @aliases getResult,DEMIDiff-method
+#' @import methods
 setMethod( "getResult", signature( object = "DEMIDiff" ),
 		function( object ) object@result
 )#getName
 
 #' @rdname getResultTable-methods
 #' @aliases getResultTable,DEMIDiff-method
+#' @import methods
 setMethod( "getResultTable", signature( object = "DEMIDiff" ),
 		function( object ) makeDEMIResultsTable( list( getResult( object ) ) )	# the function takes in the list of object 'DEMIResult'
 )#getResultTable
 
 #' @rdname getProbeLevel-methods
 #' @aliases getProbeLevel,DEMIDiff,vector,logical-method
+#' @import methods
 setMethod( "getProbeLevel", signature( object = "DEMIDiff", probes = "vector", verbose = "logical" ),
 		function( object, probes, verbose ) getProbeLevel( getExperiment( object ), probes, TRUE )
 )#getProbe
 
 #' @rdname getTargetProbes-methods
 #' @aliases getTargetProbes,DEMIDiff,vector-method
+#' @import methods
 setMethod( "getTargetProbes", signature( object = "DEMIDiff", target = "vector" ),
 		function( object, target ) getTargetProbes( getExperiment( object ), target )
 )#getGene
@@ -95,6 +106,7 @@ setMethod( "getTargetProbes", signature( object = "DEMIDiff", target = "vector" 
 
 #' @rdname demisummary-methods
 #' @aliases demisummary,DEMIDiff-method
+#' @import methods
 setMethod( "demisummary", signature( object = "DEMIDiff" ),
 		function( object, target )
 		{
@@ -146,7 +158,7 @@ setMethod( "demisummary", signature( object = "DEMIDiff" ),
 				ALL <- data.frame( ALL, rownames( ALL ) );
 				colnames( ALL )[ grep( "rownames.ALL.", colnames( ALL ) ) ] = "targetID";
 #				output <- merge( output, ALL, by = "targetID" );
-				output <- join( output, ALL, by = "targetID" );
+				output <- plyr::join( output, ALL, by = "targetID" );
 				return( output );
 			} else {
 				#stop( "0 specified targets were found in the experiment" );
@@ -162,6 +174,7 @@ setMethod( "demisummary", signature( object = "DEMIDiff" ),
 
 #' @rdname diffexp-methods
 #' @aliases diffexp,DEMIDiff-method
+#' @import methods
 setMethod( "diffexp", signature( object = "DEMIDiff" ),
 		function( object ) {
 			
@@ -233,7 +246,7 @@ setMethod( "diffexp", signature( object = "DEMIDiff" ),
 					#	Merge includes all targets because clustMatches can be 0 as well if the target has no matches
 					#	in the cluster - therefore everything will be included
 					targetMatches <- merge( totalMatches, clustMatches, by = "targetID" );
-#					targetMatches <- join( totalMatches, clustMatches, by = "targetID" ); # this gave an error for some reason
+#					targetMatches <- plyr::join( totalMatches, clustMatches, by = "targetID" ); # this gave an error for some reason
 					
 					# If maxprobes has been set, adjust targetMatches for maxprobes
 					if ( length( ( maxprobes ) ) != 0 && maxprobes != 0 ) {
@@ -254,7 +267,7 @@ setMethod( "diffexp", signature( object = "DEMIDiff" ),
 							# Calculate transcript probe matches
 							matchGene <- matchExonGene( cluster = cluster, blatTable = blatTable, annoTable = annoTable );
 							targetMatches <- data.frame( merge( targetMatches, matchGene, by = "targetID" ) );
-#							targetMatches <- data.frame( join( targetMatches, matchGene, by = "targetID" ) ); # this gave an error for some reason
+#							targetMatches <- data.frame( plyr::join( targetMatches, matchGene, by = "targetID" ) ); # this gave an error for some reason
 							targetMatches <- unique( targetMatches[ , c( "targetID", "countCluster", "countBlat", "geneClust", "geneTotal", "geneID" ) ] );
 							hypergeoPval <- apply( targetMatches, 1, calcHypergeoExon );
 						}
@@ -272,7 +285,7 @@ setMethod( "diffexp", signature( object = "DEMIDiff" ),
 						if ( analysis == "transcript" ) {
 							annoTable_temp <- annoTable[ , -c( grep( "start", colnames( annoTable ) ), grep( "length", colnames( annoTable ) ) ) ]; # remove these columns
 							resultsCluster <- merge( data.frame( targetMatches[, c( "targetID", "countCluster", "countBlat" )], probesInCluster, probesInBlat, hypergeoPval, FDR ), annoTable_temp, by = "targetID", all.x = TRUE );
-#							resultsCluster <- join( data.frame( targetMatches[, c( "targetID", "countCluster", "countBlat" )], probesInCluster, probesInBlat, hypergeoPval, FDR ), annoTable_temp, by = "targetID", type = "left" );
+#							resultsCluster <- plyr::join( data.frame( targetMatches[, c( "targetID", "countCluster", "countBlat" )], probesInCluster, probesInBlat, hypergeoPval, FDR ), annoTable_temp, by = "targetID", type = "left" );
 							#colnames( resultsCluster )[ grep( "targetID", colnames( resultsCluster ) ) ] = "transcriptID";
 						} else if ( analysis == "gene" ) {
 							annoTable_temp <- annoTable[ , -c( grep( "start", colnames( annoTable ) ), grep( "length", colnames( annoTable ) ), grep( "chr", colnames( annoTable ) ) ) ]; # remove these columns
@@ -280,15 +293,15 @@ setMethod( "diffexp", signature( object = "DEMIDiff" ),
 							colnames( annoTableCluster )[ grep( "geneID", colnames( annoTableCluster ) ) ] <- "targetID";
 							annoTableCluster = unique( annoTableCluster );
 							resultsCluster <- merge( data.frame( targetMatches[, c( "targetID", "countCluster", "countBlat" )], probesInCluster, probesInBlat, hypergeoPval, FDR ), annoTableCluster, by = "targetID", all.x = TRUE );
-#							resultsCluster <- join( data.frame( targetMatches[, c( "targetID", "countCluster", "countBlat" )], probesInCluster, probesInBlat, hypergeoPval, FDR ), annoTableCluster, by = "targetID", type = "left" );
+#							resultsCluster <- plyr::join( data.frame( targetMatches[, c( "targetID", "countCluster", "countBlat" )], probesInCluster, probesInBlat, hypergeoPval, FDR ), annoTableCluster, by = "targetID", type = "left" );
 							#colnames( resultsCluster )[ grep( "targetID", colnames( resultsCluster ) ) ] = "geneID";
 						} else if ( analysis == "exon" ) {
 							resultsCluster <- unique( merge( data.frame( targetMatches, hypergeoPval, FDR ), annoTable[ , c( "targetID", "geneSymbol", "description" ) ], by = "targetID", all.x = TRUE ) );
-#							resultsCluster <- unique( join( data.frame( targetMatches, hypergeoPval, FDR ), annoTable[ , c( "targetID", "geneSymbol", "description" ) ], by = "targetID", type = "left" ) );
+#							resultsCluster <- unique( plyr::join( data.frame( targetMatches, hypergeoPval, FDR ), annoTable[ , c( "targetID", "geneSymbol", "description" ) ], by = "targetID", type = "left" ) );
 							#colnames( resultsCluster )[ grep( "targetID", colnames( resultsCluster ) ) ] = "exonID";
 						} else if ( analysis == "genome" ) {
 							resultsCluster <- merge( data.frame( targetMatches[, c( "targetID", "countCluster", "countBlat" )], probesInCluster, probesInBlat, hypergeoPval, FDR ), annoTable, by = "targetID", all.x = TRUE );
-#							resultsCluster <- join( data.frame( targetMatches[, c( "targetID", "countCluster", "countBlat" )], probesInCluster, probesInBlat, hypergeoPval, FDR ), annoTable, by = "targetID", type = "left" );
+#							resultsCluster <- plyr::join( data.frame( targetMatches[, c( "targetID", "countCluster", "countBlat" )], probesInCluster, probesInBlat, hypergeoPval, FDR ), annoTable, by = "targetID", type = "left" );
 							#colnames( resultsCluster )[ grep( "targetID", colnames( resultsCluster ) ) ] = "sectionID";
 							# add cytoband if it exists
 							cytoband <- getCytoband( experiment );

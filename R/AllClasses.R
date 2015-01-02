@@ -25,6 +25,7 @@
 #' @name DEMICel-class
 #' @rdname DEMICel-class
 #' @exportClass DEMICel
+#' @import methods
 setClass( "DEMICel",
 		representation( celMatrix	= "matrix",
 						normMatrix	= "matrix"
@@ -56,6 +57,7 @@ setClass( "DEMICel",
 #' @name DEMIGroup-class
 #' @rdname DEMIGroup-class
 #' @exportClass DEMIGroup
+#' @import methods
 setClass( "DEMIGroup",
 		representation( groupA	= "character",
 						groupB	= "character",
@@ -128,6 +130,7 @@ setClass( "DEMIGroup",
 #' @name DEMIExperiment-class
 #' @rdname DEMIExperiment-class
 #' @exportClass DEMIExperiment
+#' @import methods
 setClass( "DEMIExperiment",
 		representation( analysis			= "character",
 						celpath				= "character",
@@ -195,6 +198,7 @@ setClass( "DEMIExperiment",
 #' @name DEMIClust-class
 #' @rdname DEMIClust-class
 #' @exportClass DEMIClust
+#' @import methods
 setClass( "DEMIClust",
 		representation( experiment		= "DEMIExperiment",
 						group			= "DEMIGroup",
@@ -228,6 +232,7 @@ setClass( "DEMIClust",
 #' @name DEMIResult-class
 #' @rdname DEMIResult-class
 #' @exportClass DEMIResult
+#' @import methods
 setClass( "DEMIResult",
 		representation( group	= "DEMIGroup",
 						result	= "list"
@@ -259,6 +264,7 @@ setClass( "DEMIResult",
 #' @name DEMIDiff-class
 #' @rdname DEMIDiff-class
 #' @exportClass DEMIDiff
+#' @import methods
 setClass( "DEMIDiff",
 		representation( cluster				= "DEMIClust",
 						name				= "character",

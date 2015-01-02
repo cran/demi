@@ -19,12 +19,15 @@
 #' @param ... Additional arguments that may never be used.
 #' @return Returns a 'DEMIResult' object.
 #' @author Sten Ilmjarv
+#' @import methods
 "initialize.DEMIResult" <-
 function( .Object, ... ) 
 {
 	.Object <- callNextMethod( .Object, ... );
 	.Object;
 }#initialize.DEMIClust
+
+#' @import methods
 setMethod( "initialize", "DEMIResult", initialize.DEMIResult );
 
 
@@ -34,12 +37,14 @@ setMethod( "initialize", "DEMIResult", initialize.DEMIResult );
 
 #' @rdname getResult-methods
 #' @aliases getResult,DEMIResult-method
+#' @import methods
 setMethod( "getResult", signature( object = "DEMIResult" ),
 		function( object ) object@result
 )#getResult
 
 #' @rdname getGroup-methods
 #' @aliases getGroup,DEMIResult-method
+#' @import methods
 setMethod( "getGroup", signature( object = "DEMIResult" ),
 		function( object ) object@group
 )#getGroup

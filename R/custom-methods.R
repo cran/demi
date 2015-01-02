@@ -394,7 +394,7 @@ function( object = "DEMIDiff" )
 		colnames( output )[1:2] = c( "clusterID", "GO:ID" );
 		colnames( gos )[1] = "GO:ID";
 #		output <- merge( output, unique( gos[, c(1,3,4,5) ] ), by = "GO:ID" )
-		output <- join( output, unique( gos[, c(1,3,4,5) ] ), by = "GO:ID" )
+		output <- plyr::join( output, unique( gos[, c(1,3,4,5) ] ), by = "GO:ID" )
 		output$FDR <- p.adjust( output$P.value, "BY", length( output$P.value ) );
 		output <- output[ order( output$FDR ), ];
 		colnames( output )[ grep( "GO:ID", colnames( output ) ) ] <- "targetID";

@@ -124,7 +124,7 @@ DEMIMessages <- list(
 				usingMicroarrayPlatform = function( platform ) { paste( "\tUsing microarray platform ", platform, "\n", sep = "" ) },
 				libraryNotInstalled = function( packageName ) { paste( "Library - package", packageName, "not installed\n" ) },
 				searchingInternetRepo = function( packageName ) { paste( "Searching the internet repository for package ", packageName, "\n", sep = "" ) },
-				packageNotFoundFromRepo = function( packageName ) { paste( "Package", packageName, "was not found in the http://biit.cs.ut.ee/demi/R/src/contrib/ repository\n" ) },
+				packageNotFoundFromRepo = function( packageName, package_url ) { paste( "Package", packageName, "was not found from the", url, " url\n" ) },
 				installingPackage = function( packageName, repository ) { paste( "Installing package", packageName, "from ", repository, "repository\n") },
 				checkYourInternet = "The current operation could not access the internet. Please check your internet connectction",
 				loadingAnnoSuccess = function( packageName ) { paste( "# Loading required annotation data from ", packageName, "\n", sep = "" ) },
